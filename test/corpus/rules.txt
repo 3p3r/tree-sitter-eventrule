@@ -1,0 +1,694 @@
+================================================================================
+Prefix matching
+================================================================================
+
+{
+  "time": [ { "prefix": "2017-10-02" } ]
+}
+
+--------------------------------------------------------------------------------
+
+(document
+  (object
+    (pair
+      key: (string
+        (string_content))
+      value: (array
+        (object
+          (rule_prefix_matching
+            (string
+              (string_content))))))))
+
+================================================================================
+Suffix matching
+================================================================================
+
+{
+  "source": [ { "suffix": "ec2" } ]
+}
+
+--------------------------------------------------------------------------------
+
+(document
+  (object
+    (pair
+      key: (string
+        (string_content))
+      value: (array
+        (object
+          (rule_suffix_matching
+            (string
+              (string_content))))))))
+
+================================================================================
+Equals-ignore-case matching
+================================================================================
+
+{
+  "source": [ { "equals-ignore-case": "EC2" } ]
+}
+
+--------------------------------------------------------------------------------
+
+(document
+  (object
+    (pair
+      key: (string
+        (string_content))
+      value: (array
+        (object
+          (rule_equals_ignore_case_matching
+            (string
+              (string_content))))))))
+
+================================================================================
+Wildcard matching
+================================================================================
+
+{
+  "source": [ { "wildcard": "Simple*Service" } ]
+}
+
+--------------------------------------------------------------------------------
+
+(document
+  (object
+    (pair
+      key: (string
+        (string_content))
+      value: (array
+        (object
+          (rule_wildcard_matching
+            (string
+              (string_content))))))))
+
+================================================================================
+Anything-but matching 1
+================================================================================
+
+{
+  "detail": {
+    "state": [ { "anything-but": "initializing" } ]
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(document
+  (object
+    (pair
+      key: (string
+        (string_content))
+      value: (object
+        (pair
+          key: (string
+            (string_content))
+          value: (array
+            (object
+              (rule_anything_but_matching
+                (string
+                  (string_content))))))))))
+
+================================================================================
+Anything-but matching 2
+================================================================================
+
+{
+  "detail": {
+    "x-limit": [ { "anything-but": 123 } ]
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(document
+  (object
+    (pair
+      key: (string
+        (string_content))
+      value: (object
+        (pair
+          key: (string
+            (string_content))
+          value: (array
+            (object
+              (rule_anything_but_matching
+                (number)))))))))
+
+================================================================================
+Anything-but matching 3
+================================================================================
+
+{
+  "detail": {
+    "state": [ { "anything-but": [ "stopped", "overloaded" ] } ]
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(document
+  (object
+    (pair
+      key: (string
+        (string_content))
+      value: (object
+        (pair
+          key: (string
+            (string_content))
+          value: (array
+            (object
+              (rule_anything_but_matching
+                (array_string
+                  (string
+                    (string_content))
+                  (string
+                    (string_content)))))))))))
+
+================================================================================
+Anything-but matching 4
+================================================================================
+
+{
+  "detail": {
+    "x-limit": [ { "anything-but": [ 100, 200, 300 ] } ]
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(document
+  (object
+    (pair
+      key: (string
+        (string_content))
+      value: (object
+        (pair
+          key: (string
+            (string_content))
+          value: (array
+            (object
+              (rule_anything_but_matching
+                (array_number
+                  (number)
+                  (number)
+                  (number))))))))))
+
+================================================================================
+Anything-but matching 5
+================================================================================
+
+{
+  "detail": {
+    "state": [ { "anything-but": { "prefix": "init" } } ]
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(document
+  (object
+    (pair
+      key: (string
+        (string_content))
+      value: (object
+        (pair
+          key: (string
+            (string_content))
+          value: (array
+            (object
+              (rule_anything_but_matching
+                (ERROR)
+                (rule_prefix_matching
+                  (string
+                    (string_content)))))
+            (ERROR)))))))
+
+================================================================================
+Numeric matching
+================================================================================
+
+{
+  "detail": {
+    "c-count": [ { "numeric": [ ">", 0, "<=", 5 ] } ],
+    "d-count": [ { "numeric": [ "<", 10 ] } ],
+    "x-limit": [ { "numeric": [ "=", 3.018e2 ] } ]
+  }
+} 
+
+--------------------------------------------------------------------------------
+
+(document
+  (object
+    (pair
+      (string
+        (string_content))
+      (object
+        (pair
+          (string
+            (string_content))
+          (array
+            (object
+              (rule_numeric_matching
+                (rule_numeric_comparison_sign)
+                (number)
+                (rule_numeric_comparison_sign)
+                (number)))))
+        (pair
+          (string
+            (string_content))
+          (array
+            (object
+              (rule_numeric_matching
+                (rule_numeric_comparison_sign)
+                (number)))))
+        (pair
+          (string
+            (string_content))
+          (array
+            (object
+              (rule_numeric_matching
+                (number)))))))))
+
+================================================================================
+IP Address Matching
+================================================================================
+
+{
+  "detail": {
+    "source-ip": [ { "cidr": "10.0.0.0/24" } ]
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(document
+  (object
+    (pair
+      (string
+        (string_content))
+      (object
+        (pair
+          (string
+            (string_content))
+          (array
+            (object
+              (rule_ip_address_matching
+                (string
+                  (string_content))))))))))
+
+================================================================================
+Exists matching 1
+================================================================================
+
+{
+  "detail": {
+    "c-count": [ { "exists": true  } ]
+  }
+}  
+
+--------------------------------------------------------------------------------
+
+(document
+  (object
+    (pair
+      (string
+        (string_content))
+      (object
+        (pair
+          (string
+            (string_content))
+          (array
+            (object
+              (rule_exists_matching
+                (boolean
+                  (true))))))))))
+
+================================================================================
+Exists matching 2
+================================================================================
+
+{
+  "detail": {
+    "c-count": [ { "exists": false  } ]
+  }
+}  
+
+--------------------------------------------------------------------------------
+
+(document
+  (object
+    (pair
+      (string
+        (string_content))
+      (object
+        (pair
+          (string
+            (string_content))
+          (array
+            (object
+              (rule_exists_matching
+                (boolean
+                  (false))))))))))
+
+================================================================================
+Complex example
+================================================================================
+
+{
+  "time": [ { "prefix": "2017-10-02" } ],
+  "detail": {
+    "state": [ { "anything-but": "initializing" } ],
+    "c-count": [ { "numeric": [ ">", 0, "<=", 5 ] } ],
+    "d-count": [ { "numeric": [ "<", 10 ] } ],
+    "x-limit": [ { "anything-but": [ 100, 200, 300 ] } ],
+    "source-ip": [ { "cidr": "10.0.0.0/8" } ]
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(document
+  (object
+    (pair
+      (string
+        (string_content))
+      (array
+        (object
+          (rule_prefix_matching
+            (string
+              (string_content))))))
+    (pair
+      (string
+        (string_content))
+      (object
+        (pair
+          (string
+            (string_content))
+          (array
+            (object
+              (rule_anything_but_matching
+                (string
+                  (string_content))))))
+        (pair
+          (string
+            (string_content))
+          (array
+            (object
+              (rule_numeric_matching
+                (rule_numeric_comparison_sign)
+                (number)
+                (rule_numeric_comparison_sign)
+                (number)))))
+        (pair
+          (string
+            (string_content))
+          (array
+            (object
+              (rule_numeric_matching
+                (rule_numeric_comparison_sign)
+                (number)))))
+        (pair
+          (string
+            (string_content))
+          (array
+            (object
+              (rule_anything_but_matching
+                (array_number
+                  (number)
+                  (number)
+                  (number))))))
+        (pair
+          (string
+            (string_content))
+          (array
+            (object
+              (rule_ip_address_matching
+                (string
+                  (string_content))))))))))
+
+================================================================================
+The "$or" Primitive
+================================================================================
+
+{ 
+   "$or": [ {"numeric" : 123}, {"prefix": "abc"} ] 
+} 
+
+--------------------------------------------------------------------------------
+
+(document
+  (object
+    (rule_or_matching
+      (object
+        (rule_numeric_matching
+          (number)))
+      (object
+        (rule_prefix_matching
+          (string
+            (string_content)))))))
+
+================================================================================
+Normal "Or"
+================================================================================
+
+// Effect of "source" && ("metricName" || "namespace")
+{
+  "source": [ "aws.cloudwatch" ], 
+  "$or": [
+    { "metricName": [ "CPUUtilization", "ReadLatency" ] },
+    { "namespace": [ "AWS/EC2", "AWS/ES" ] }
+  ] 
+}
+
+--------------------------------------------------------------------------------
+
+(document
+  (comment)
+  (object
+    (pair
+      (string
+        (string_content))
+      (array
+        (string
+          (string_content))))
+    (rule_or_matching
+      (object
+        (pair
+          (string
+            (string_content))
+          (array
+            (string
+              (string_content))
+            (string
+              (string_content)))))
+      (object
+        (pair
+          (string
+            (string_content))
+          (array
+            (string
+              (string_content))
+            (string
+              (string_content))))))))
+
+================================================================================
+Parallel "Or"
+================================================================================
+
+// Effect of ("metricName" || "namespace") && ("detail.source" || "detail.detail-type")
+{
+  "$or": [
+    { "metricName": [ "CPUUtilization", "ReadLatency" ] },
+    { "namespace": [ "AWS/EC2", "AWS/ES" ] }
+  ], 
+  "detail" : {
+    "$or": [
+      { "source": [ "aws.cloudwatch" ] },
+      { "detail-type": [ "CloudWatch Alarm State Change"] }
+    ]
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(document
+  (comment)
+  (object
+    (rule_or_matching
+      (object
+        (pair
+          (string
+            (string_content))
+          (array
+            (string
+              (string_content))
+            (string
+              (string_content)))))
+      (object
+        (pair
+          (string
+            (string_content))
+          (array
+            (string
+              (string_content))
+            (string
+              (string_content))))))
+    (pair
+      (string
+        (string_content))
+      (object
+        (rule_or_matching
+          (object
+            (pair
+              (string
+                (string_content))
+              (array
+                (string
+                  (string_content)))))
+          (object
+            (pair
+              (string
+                (string_content))
+              (array
+                (string
+                  (string_content))))))))))
+
+================================================================================
+"Or" has an "And" inside
+================================================================================
+
+// Effect of ("source" && ("metricName" || ("metricType && "namespace") || "scope"))
+{
+  "source": [ "aws.cloudwatch" ],
+  "$or": [
+    { "metricName": [ "CPUUtilization", "ReadLatency" ] },
+    {
+      "metricType": [ "MetricType" ] ,
+      "namespace": [ "AWS/EC2", "AWS/ES" ]
+    },
+    { "scope": [ "Service" ] }
+  ]
+}
+
+--------------------------------------------------------------------------------
+
+(document
+  (comment)
+  (object
+    (pair
+      (string
+        (string_content))
+      (array
+        (string
+          (string_content))))
+    (rule_or_matching
+      (object
+        (pair
+          (string
+            (string_content))
+          (array
+            (string
+              (string_content))
+            (string
+              (string_content)))))
+      (object
+        (pair
+          (string
+            (string_content))
+          (array
+            (string
+              (string_content))))
+        (pair
+          (string
+            (string_content))
+          (array
+            (string
+              (string_content))
+            (string
+              (string_content)))))
+      (object
+        (pair
+          (string
+            (string_content))
+          (array
+            (string
+              (string_content))))))))
+
+================================================================================
+Nested "Or" and "And"
+================================================================================
+
+// Effect of ("source" && ("metricName" || ("metricType && "namespace" && ("metricId" || "spaceId")) || "scope"))
+{
+  "source": [ "aws.cloudwatch" ],
+  "$or": [
+    { "metricName": [ "CPUUtilization", "ReadLatency" ] },
+    {
+      "metricType": [ "MetricType" ] ,
+      "namespace": [ "AWS/EC2", "AWS/ES" ],
+      "$or" : [
+        { "metricId": [ 1234 ] },
+        { "spaceId": [ 1000 ] }
+      ]
+    },
+    { "scope": [ "Service" ] }
+  ]
+}
+
+--------------------------------------------------------------------------------
+
+(document
+  (comment)
+  (object
+    (pair
+      (string
+        (string_content))
+      (array
+        (string
+          (string_content))))
+    (rule_or_matching
+      (object
+        (pair
+          (string
+            (string_content))
+          (array
+            (string
+              (string_content))
+            (string
+              (string_content)))))
+      (object
+        (pair
+          (string
+            (string_content))
+          (array
+            (string
+              (string_content))))
+        (pair
+          (string
+            (string_content))
+          (array
+            (string
+              (string_content))
+            (string
+              (string_content))))
+        (rule_or_matching
+          (object
+            (pair
+              (string
+                (string_content))
+              (array
+                (number))))
+          (object
+            (pair
+              (string
+                (string_content))
+              (array
+                (number))))))
+      (object
+        (pair
+          (string
+            (string_content))
+          (array
+            (string
+              (string_content))))))))
