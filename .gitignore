@@ -108,3 +108,4 @@ binding*
 Cargo.toml
 src/
 pattern.json
+*.wasm

@@ -159,7 +159,7 @@ Anything-but matching 3
           value: (array
             (object
               (rule_anything_but_matching
-                (array_string
+                (rule_value_matching
                   (string
                     (string_content))
                   (string
@@ -189,7 +189,7 @@ Anything-but matching 4
           value: (array
             (object
               (rule_anything_but_matching
-                (array_number
+                (rule_value_matching
                   (number)
                   (number)
                   (number))))))))))
@@ -414,7 +414,7 @@ Complex example
           (array
             (object
               (rule_anything_but_matching
-                (array_number
+                (rule_value_matching
                   (number)
                   (number)
                   (number))))))
@@ -470,27 +470,30 @@ Normal "Or"
       (string
         (string_content))
       (array
-        (string
-          (string_content))))
+        (rule_value_matching
+          (string
+            (string_content)))))
     (rule_or_matching
       (object
         (pair
           (string
             (string_content))
           (array
-            (string
-              (string_content))
-            (string
-              (string_content)))))
+            (rule_value_matching
+              (string
+                (string_content))
+              (string
+                (string_content))))))
       (object
         (pair
           (string
             (string_content))
           (array
-            (string
-              (string_content))
-            (string
-              (string_content))))))))
+            (rule_value_matching
+              (string
+                (string_content))
+              (string
+                (string_content)))))))))
 
 ================================================================================
 Parallel "Or"
@@ -521,19 +524,21 @@ Parallel "Or"
           (string
             (string_content))
           (array
-            (string
-              (string_content))
-            (string
-              (string_content)))))
+            (rule_value_matching
+              (string
+                (string_content))
+              (string
+                (string_content))))))
       (object
         (pair
           (string
             (string_content))
           (array
-            (string
-              (string_content))
-            (string
-              (string_content))))))
+            (rule_value_matching
+              (string
+                (string_content))
+              (string
+                (string_content)))))))
     (pair
       (string
         (string_content))
@@ -544,15 +549,17 @@ Parallel "Or"
               (string
                 (string_content))
               (array
-                (string
-                  (string_content)))))
+                (rule_value_matching
+                  (string
+                    (string_content))))))
           (object
             (pair
               (string
                 (string_content))
               (array
-                (string
-                  (string_content))))))))))
+                (rule_value_matching
+                  (string
+                    (string_content)))))))))))
 
 ================================================================================
 "Or" has an "And" inside
@@ -580,40 +587,45 @@ Parallel "Or"
       (string
         (string_content))
       (array
-        (string
-          (string_content))))
+        (rule_value_matching
+          (string
+            (string_content)))))
     (rule_or_matching
       (object
         (pair
           (string
             (string_content))
           (array
-            (string
-              (string_content))
-            (string
-              (string_content)))))
+            (rule_value_matching
+              (string
+                (string_content))
+              (string
+                (string_content))))))
       (object
         (pair
           (string
             (string_content))
           (array
-            (string
-              (string_content))))
+            (rule_value_matching
+              (string
+                (string_content)))))
         (pair
           (string
             (string_content))
           (array
-            (string
-              (string_content))
-            (string
-              (string_content)))))
+            (rule_value_matching
+              (string
+                (string_content))
+              (string
+                (string_content))))))
       (object
         (pair
           (string
             (string_content))
           (array
-            (string
-              (string_content))))))))
+            (rule_value_matching
+              (string
+                (string_content)))))))))
 
 ================================================================================
 Nested "Or" and "And"
@@ -645,50 +657,57 @@ Nested "Or" and "And"
       (string
         (string_content))
       (array
-        (string
-          (string_content))))
+        (rule_value_matching
+          (string
+            (string_content)))))
     (rule_or_matching
       (object
         (pair
           (string
             (string_content))
           (array
-            (string
-              (string_content))
-            (string
-              (string_content)))))
+            (rule_value_matching
+              (string
+                (string_content))
+              (string
+                (string_content))))))
       (object
         (pair
           (string
             (string_content))
           (array
-            (string
-              (string_content))))
+            (rule_value_matching
+              (string
+                (string_content)))))
         (pair
           (string
             (string_content))
           (array
-            (string
-              (string_content))
-            (string
-              (string_content))))
+            (rule_value_matching
+              (string
+                (string_content))
+              (string
+                (string_content)))))
         (rule_or_matching
           (object
             (pair
               (string
                 (string_content))
               (array
-                (number))))
+                (rule_value_matching
+                  (number)))))
           (object
             (pair
               (string
                 (string_content))
               (array
-                (number))))))
+                (rule_value_matching
+                  (number)))))))
       (object
         (pair
           (string
             (string_content))
           (array
-            (string
-              (string_content))))))))
+            (rule_value_matching
+              (string
+                (string_content)))))))))

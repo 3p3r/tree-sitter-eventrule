@@ -2,7 +2,10 @@
 module.exports = grammar(require("tree-sitter-json/grammar"), {
   name: "eventrule",
 
-  conflicts: ($) => [[$.array_string, $.array_number]],
+  conflicts: ($) => [
+    [$.rule_value_matching, $.array],
+    [$.rule_value_matching, $._value],
+  ],
 
   rules: {
     object: ($) =>
@@ -11,6 +14,7 @@ module.exports = grammar(require("tree-sitter-json/grammar"), {
         commaSep(
           choice(
             $.pair,
+            $.rule_value_matching,
             $.rule_prefix_matching,
             $.rule_suffix_matching,
             $.rule_equals_ignore_case_matching,
@@ -25,15 +29,15 @@ module.exports = grammar(require("tree-sitter-json/grammar"), {
         "}"
       ),
 
-    array_number: ($) => seq("[", commaSep($.number), "]"),
-    array_string: ($) => seq("[", commaSep($.string), "]"),
+    array: ($, previous) => choice(previous, $.rule_value_matching),
 
+    rule_value_matching: ($) => choice(seq("[", commaSep($.number), "]"), seq("[", commaSep($.string), "]")),
     rule_prefix_matching: ($) => seq('"prefix"', ":", $.string),
     rule_suffix_matching: ($) => seq('"suffix"', ":", $.string),
     rule_equals_ignore_case_matching: ($) => seq('"equals-ignore-case"', ":", $.string),
     rule_wildcard_matching: ($) => seq('"wildcard"', ":", $.string),
     rule_anything_but_matching: ($) =>
-      seq('"anything-but"', ":", choice($.number, $.string, $.array_number, $.array_string, $.rule_prefix_matching)),
+      seq('"anything-but"', ":", choice($.number, $.string, $.rule_value_matching, $.rule_prefix_matching)),
     rule_numeric_comparison_sign: ($) => choice('"<"', '">"', '"<="', '">="'),
     rule_numeric_matching: ($) =>
       seq(

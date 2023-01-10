@@ -4,7 +4,8 @@
   "description": "Grammar for AWS Event Rules: https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns-content-based-filtering.html",
   "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tree-sitter generate && tree-sitter build-wasm",
+    "test": "tree-sitter generate && tree-sitter test"
   },
   "repository": {
     "type": "git",
@@ -14,7 +15,9 @@
     "aws",
     "eventbridge",
     "eventrule",
-    "event"
+    "event",
+    "parser",
+    "json"
   ],
   "author": "Sepehr Laal",
   "license": "MIT",
