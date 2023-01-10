@@ -1,0 +1,104 @@
+================================================================================
+Normal Rules With Or Wording
+================================================================================
+
+[
+  {
+    "$or": [{ "cidr": "10.0.0.0/24" }]
+  },
+
+  {
+    "source": ["aws.cloudwatch"],
+    "$or": {
+      "metricType": ["MetricType"],
+      "namespace": ["AWS/EC2", "AWS/ES"]
+    }
+  },
+
+  {
+    "time": [{ "prefix": "2017-10-02" }],
+    "detail": {
+      "$or": [{ "numeric": [">", 0, "<=", 5] }, { "cidr": "10.0.0.0/8" }]
+    }
+  },
+
+  {
+    "detail": {
+      "$or": [{ "numeric": [">", 0, "<=", 5] }, { "numeric": [">", 10] }]
+    }
+  }
+]
+
+--------------------------------------------------------------------------------
+
+(document
+  (array
+    (object
+      (rule_or_matching
+        (object
+          (rule_ip_address_matching
+            (string
+              (string_content))))))
+    (object
+      (pair
+        (string
+          (string_content))
+        (array
+          (rule_value_array
+            (string
+              (string_content)))))
+      (rule_or_matching
+        (rule_value_matching
+          (string
+            (string_content))
+          (rule_value_array
+            (string
+              (string_content))))
+        (rule_value_matching
+          (string
+            (string_content))
+          (rule_value_array
+            (string
+              (string_content))
+            (string
+              (string_content))))))
+    (object
+      (pair
+        (string
+          (string_content))
+        (array
+          (object
+            (rule_prefix_matching
+              (string
+                (string_content))))))
+      (pair
+        (string
+          (string_content))
+        (object
+          (rule_or_matching
+            (object
+              (rule_numeric_matching
+                (rule_numeric_comparison_sign)
+                (number)
+                (rule_numeric_comparison_sign)
+                (number)))
+            (object
+              (rule_ip_address_matching
+                (string
+                  (string_content))))))))
+    (object
+      (pair
+        (string
+          (string_content))
+        (object
+          (rule_or_matching
+            (object
+              (rule_numeric_matching
+                (rule_numeric_comparison_sign)
+                (number)
+                (rule_numeric_comparison_sign)
+                (number)))
+            (object
+              (rule_numeric_matching
+                (rule_numeric_comparison_sign)
+                (number)))))))))

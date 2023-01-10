@@ -141,7 +141,7 @@ Anything-but matching 3
 
 {
   "detail": {
-    "state": [ { "anything-but": [ "stopped", "overloaded" ] } ]
+    "state": [{ "anything-but": ["stopped", "overloaded"] }]
   }
 }
 
@@ -159,7 +159,7 @@ Anything-but matching 3
           value: (array
             (object
               (rule_anything_but_matching
-                (rule_value_matching
+                (rule_value_array
                   (string
                     (string_content))
                   (string
@@ -189,7 +189,7 @@ Anything-but matching 4
           value: (array
             (object
               (rule_anything_but_matching
-                (rule_value_matching
+                (rule_value_array
                   (number)
                   (number)
                   (number))))))))))
@@ -218,11 +218,9 @@ Anything-but matching 5
           value: (array
             (object
               (rule_anything_but_matching
-                (ERROR)
                 (rule_prefix_matching
                   (string
-                    (string_content)))))
-            (ERROR)))))))
+                    (string_content)))))))))))
 
 ================================================================================
 Numeric matching
@@ -414,7 +412,7 @@ Complex example
           (array
             (object
               (rule_anything_but_matching
-                (rule_value_matching
+                (rule_value_array
                   (number)
                   (number)
                   (number))))))
@@ -428,37 +426,13 @@ Complex example
                   (string_content))))))))))
 
 ================================================================================
-The "$or" Primitive
-================================================================================
-
-{ 
-   "$or": [ {"numeric" : 123}, {"prefix": "abc"} ] 
-} 
-
---------------------------------------------------------------------------------
-
-(document
-  (object
-    (rule_or_matching
-      (object
-        (rule_numeric_matching
-          (number)))
-      (object
-        (rule_prefix_matching
-          (string
-            (string_content)))))))
-
-================================================================================
 Normal "Or"
 ================================================================================
 
 // Effect of "source" && ("metricName" || "namespace")
 {
-  "source": [ "aws.cloudwatch" ], 
-  "$or": [
-    { "metricName": [ "CPUUtilization", "ReadLatency" ] },
-    { "namespace": [ "AWS/EC2", "AWS/ES" ] }
-  ] 
+  "source": ["aws.cloudwatch"],
+  "$or": [{ "metricName": ["CPUUtilization", "ReadLatency"] }, { "namespace": ["AWS/EC2", "AWS/ES"] }]
 }
 
 --------------------------------------------------------------------------------
@@ -470,7 +444,7 @@ Normal "Or"
       (string
         (string_content))
       (array
-        (rule_value_matching
+        (rule_value_array
           (string
             (string_content)))))
     (rule_or_matching
@@ -479,7 +453,7 @@ Normal "Or"
           (string
             (string_content))
           (array
-            (rule_value_matching
+            (rule_value_array
               (string
                 (string_content))
               (string
@@ -489,7 +463,7 @@ Normal "Or"
           (string
             (string_content))
           (array
-            (rule_value_matching
+            (rule_value_array
               (string
                 (string_content))
               (string
@@ -501,15 +475,9 @@ Parallel "Or"
 
 // Effect of ("metricName" || "namespace") && ("detail.source" || "detail.detail-type")
 {
-  "$or": [
-    { "metricName": [ "CPUUtilization", "ReadLatency" ] },
-    { "namespace": [ "AWS/EC2", "AWS/ES" ] }
-  ], 
-  "detail" : {
-    "$or": [
-      { "source": [ "aws.cloudwatch" ] },
-      { "detail-type": [ "CloudWatch Alarm State Change"] }
-    ]
+  "$or": [{ "metricName": ["CPUUtilization", "ReadLatency"] }, { "namespace": ["AWS/EC2", "AWS/ES"] }],
+  "detail": {
+    "$or": [{ "source": ["aws.cloudwatch"] }, { "detail-type": ["CloudWatch Alarm State Change"] }]
   }
 }
 
@@ -524,7 +492,7 @@ Parallel "Or"
           (string
             (string_content))
           (array
-            (rule_value_matching
+            (rule_value_array
               (string
                 (string_content))
               (string
@@ -534,7 +502,7 @@ Parallel "Or"
           (string
             (string_content))
           (array
-            (rule_value_matching
+            (rule_value_array
               (string
                 (string_content))
               (string
@@ -549,7 +517,7 @@ Parallel "Or"
               (string
                 (string_content))
               (array
-                (rule_value_matching
+                (rule_value_array
                   (string
                     (string_content))))))
           (object
@@ -557,7 +525,7 @@ Parallel "Or"
               (string
                 (string_content))
               (array
-                (rule_value_matching
+                (rule_value_array
                   (string
                     (string_content)))))))))))
 
@@ -567,14 +535,14 @@ Parallel "Or"
 
 // Effect of ("source" && ("metricName" || ("metricType && "namespace") || "scope"))
 {
-  "source": [ "aws.cloudwatch" ],
+  "source": ["aws.cloudwatch"],
   "$or": [
-    { "metricName": [ "CPUUtilization", "ReadLatency" ] },
+    { "metricName": ["CPUUtilization", "ReadLatency"] },
     {
-      "metricType": [ "MetricType" ] ,
-      "namespace": [ "AWS/EC2", "AWS/ES" ]
+      "metricType": ["MetricType"],
+      "namespace": ["AWS/EC2", "AWS/ES"]
     },
-    { "scope": [ "Service" ] }
+    { "scope": ["Service"] }
   ]
 }
 
@@ -587,7 +555,7 @@ Parallel "Or"
       (string
         (string_content))
       (array
-        (rule_value_matching
+        (rule_value_array
           (string
             (string_content)))))
     (rule_or_matching
@@ -596,7 +564,7 @@ Parallel "Or"
           (string
             (string_content))
           (array
-            (rule_value_matching
+            (rule_value_array
               (string
                 (string_content))
               (string
@@ -606,24 +574,23 @@ Parallel "Or"
           (string
             (string_content))
           (array
-            (rule_value_matching
+            (rule_value_array
               (string
                 (string_content)))))
-        (pair
+        (rule_value_matching
           (string
             (string_content))
-          (array
-            (rule_value_matching
-              (string
-                (string_content))
-              (string
-                (string_content))))))
+          (rule_value_array
+            (string
+              (string_content))
+            (string
+              (string_content)))))
       (object
         (pair
           (string
             (string_content))
           (array
-            (rule_value_matching
+            (rule_value_array
               (string
                 (string_content)))))))))
 
@@ -633,18 +600,15 @@ Nested "Or" and "And"
 
 // Effect of ("source" && ("metricName" || ("metricType && "namespace" && ("metricId" || "spaceId")) || "scope"))
 {
-  "source": [ "aws.cloudwatch" ],
+  "source": ["aws.cloudwatch"],
   "$or": [
-    { "metricName": [ "CPUUtilization", "ReadLatency" ] },
+    { "metricName": ["CPUUtilization", "ReadLatency"] },
     {
-      "metricType": [ "MetricType" ] ,
-      "namespace": [ "AWS/EC2", "AWS/ES" ],
-      "$or" : [
-        { "metricId": [ 1234 ] },
-        { "spaceId": [ 1000 ] }
-      ]
+      "metricType": ["MetricType"],
+      "namespace": ["AWS/EC2", "AWS/ES"],
+      "$or": [{ "metricId": [1234] }, { "spaceId": [1000] }]
     },
-    { "scope": [ "Service" ] }
+    { "scope": ["Service"] }
   ]
 }
 
@@ -657,7 +621,7 @@ Nested "Or" and "And"
       (string
         (string_content))
       (array
-        (rule_value_matching
+        (rule_value_array
           (string
             (string_content)))))
     (rule_or_matching
@@ -666,7 +630,7 @@ Nested "Or" and "And"
           (string
             (string_content))
           (array
-            (rule_value_matching
+            (rule_value_array
               (string
                 (string_content))
               (string
@@ -676,38 +640,37 @@ Nested "Or" and "And"
           (string
             (string_content))
           (array
-            (rule_value_matching
+            (rule_value_array
               (string
                 (string_content)))))
-        (pair
+        (rule_value_matching
           (string
             (string_content))
-          (array
-            (rule_value_matching
-              (string
-                (string_content))
-              (string
-                (string_content)))))
+          (rule_value_array
+            (string
+              (string_content))
+            (string
+              (string_content))))
         (rule_or_matching
           (object
             (pair
               (string
                 (string_content))
               (array
-                (rule_value_matching
+                (rule_value_array
                   (number)))))
           (object
             (pair
               (string
                 (string_content))
               (array
-                (rule_value_matching
+                (rule_value_array
                   (number)))))))
       (object
         (pair
           (string
             (string_content))
           (array
-            (rule_value_matching
+            (rule_value_array
               (string
                 (string_content)))))))))

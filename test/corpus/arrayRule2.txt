@@ -1,0 +1,78 @@
+================================================================================
+Array Rule 2
+================================================================================
+
+{
+  "source": ["aws.cloudwatch"],
+  "detail-type": ["CloudWatch Alarm State Change"],
+  "detail": {
+    "state": {
+      "value": ["ALARM"]
+    },
+    "configuration": {
+      "metrics": {
+        "metricStat": {
+          "metric": {
+            "metricName": ["CPUUtilization"]
+          }
+        }
+      }
+    }
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(document
+  (object
+    (pair
+      (string
+        (string_content))
+      (array
+        (rule_value_array
+          (string
+            (string_content)))))
+    (rule_value_matching
+      (string
+        (string_content))
+      (rule_value_array
+        (string
+          (string_content))))
+    (pair
+      (string
+        (string_content))
+      (object
+        (pair
+          (string
+            (string_content))
+          (object
+            (pair
+              (string
+                (string_content))
+              (array
+                (rule_value_array
+                  (string
+                    (string_content)))))))
+        (pair
+          (string
+            (string_content))
+          (object
+            (pair
+              (string
+                (string_content))
+              (object
+                (pair
+                  (string
+                    (string_content))
+                  (object
+                    (pair
+                      (string
+                        (string_content))
+                      (object
+                        (pair
+                          (string
+                            (string_content))
+                          (array
+                            (rule_value_array
+                              (string
+                                (string_content)))))))))))))))))

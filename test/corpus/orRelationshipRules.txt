@@ -1,0 +1,305 @@
+================================================================================
+$or Relationship Rules
+================================================================================
+
+[
+  {
+    "$or": [{ "metricName": ["CPUUtilization", "ReadLatency"] }, { "namespace": ["AWS/EC2", "AWS/ES"] }]
+  },
+
+  {
+    "$or": [{ "metricName": ["CPUUtilization", "ReadLatency"] }, { "namespace": ["AWS/EC2", "AWS/ES"] }],
+    "detail": {
+      "$or": [{ "source": ["aws.cloudwatch"] }, { "detail-type": ["CloudWatch Alarm State Change"] }]
+    }
+  },
+
+  {
+    "source": ["aws.cloudwatch"],
+    "$or": [
+      { "metricName": ["CPUUtilization", "ReadLatency"] },
+      {
+        "metricType": ["MetricType"],
+        "namespace": ["AWS/EC2", "AWS/ES"]
+      },
+      { "scope": ["Service"] }
+    ]
+  },
+
+  {
+    "source": ["aws.cloudwatch"],
+    "$or": [
+      { "metricName": ["CPUUtilization", "ReadLatency"] },
+      {
+        "metricType": ["MetricType"],
+        "namespace": ["AWS/EC2", "AWS/ES"],
+        "$or": [{ "metricId": [1234] }, { "spaceId": [1000] }]
+      },
+      { "scope": ["Service"] }
+    ]
+  },
+
+  {
+    "source": ["aws.cloudwatch"],
+    "detail": {
+      "state": {
+        "value": ["ALARM"]
+      }
+    },
+    "$or": [
+      {
+        "withConfiguration": {
+          "metrics": {
+            "metricStat": {
+              "metric": {
+                "namespace": ["AWS/EC2"]
+              }
+            }
+          }
+        }
+      },
+      {
+        "withoutConfiguration": {
+          "metric": {
+            "name": ["AWS/Default"]
+          }
+        }
+      }
+    ]
+  }
+]
+
+--------------------------------------------------------------------------------
+
+(document
+  (array
+    (object
+      (rule_or_matching
+        (object
+          (pair
+            (string
+              (string_content))
+            (array
+              (rule_value_array
+                (string
+                  (string_content))
+                (string
+                  (string_content))))))
+        (object
+          (pair
+            (string
+              (string_content))
+            (array
+              (rule_value_array
+                (string
+                  (string_content))
+                (string
+                  (string_content))))))))
+    (object
+      (rule_or_matching
+        (object
+          (pair
+            (string
+              (string_content))
+            (array
+              (rule_value_array
+                (string
+                  (string_content))
+                (string
+                  (string_content))))))
+        (object
+          (pair
+            (string
+              (string_content))
+            (array
+              (rule_value_array
+                (string
+                  (string_content))
+                (string
+                  (string_content)))))))
+      (pair
+        (string
+          (string_content))
+        (object
+          (rule_or_matching
+            (object
+              (pair
+                (string
+                  (string_content))
+                (array
+                  (rule_value_array
+                    (string
+                      (string_content))))))
+            (object
+              (pair
+                (string
+                  (string_content))
+                (array
+                  (rule_value_array
+                    (string
+                      (string_content))))))))))
+    (object
+      (pair
+        (string
+          (string_content))
+        (array
+          (rule_value_array
+            (string
+              (string_content)))))
+      (rule_or_matching
+        (object
+          (pair
+            (string
+              (string_content))
+            (array
+              (rule_value_array
+                (string
+                  (string_content))
+                (string
+                  (string_content))))))
+        (object
+          (pair
+            (string
+              (string_content))
+            (array
+              (rule_value_array
+                (string
+                  (string_content)))))
+          (rule_value_matching
+            (string
+              (string_content))
+            (rule_value_array
+              (string
+                (string_content))
+              (string
+                (string_content)))))
+        (object
+          (pair
+            (string
+              (string_content))
+            (array
+              (rule_value_array
+                (string
+                  (string_content))))))))
+    (object
+      (pair
+        (string
+          (string_content))
+        (array
+          (rule_value_array
+            (string
+              (string_content)))))
+      (rule_or_matching
+        (object
+          (pair
+            (string
+              (string_content))
+            (array
+              (rule_value_array
+                (string
+                  (string_content))
+                (string
+                  (string_content))))))
+        (object
+          (pair
+            (string
+              (string_content))
+            (array
+              (rule_value_array
+                (string
+                  (string_content)))))
+          (rule_value_matching
+            (string
+              (string_content))
+            (rule_value_array
+              (string
+                (string_content))
+              (string
+                (string_content))))
+          (rule_or_matching
+            (object
+              (pair
+                (string
+                  (string_content))
+                (array
+                  (rule_value_array
+                    (number)))))
+            (object
+              (pair
+                (string
+                  (string_content))
+                (array
+                  (rule_value_array
+                    (number)))))))
+        (object
+          (pair
+            (string
+              (string_content))
+            (array
+              (rule_value_array
+                (string
+                  (string_content))))))))
+    (object
+      (pair
+        (string
+          (string_content))
+        (array
+          (rule_value_array
+            (string
+              (string_content)))))
+      (pair
+        (string
+          (string_content))
+        (object
+          (pair
+            (string
+              (string_content))
+            (object
+              (pair
+                (string
+                  (string_content))
+                (array
+                  (rule_value_array
+                    (string
+                      (string_content)))))))))
+      (rule_or_matching
+        (object
+          (pair
+            (string
+              (string_content))
+            (object
+              (pair
+                (string
+                  (string_content))
+                (object
+                  (pair
+                    (string
+                      (string_content))
+                    (object
+                      (pair
+                        (string
+                          (string_content))
+                        (object
+                          (pair
+                            (string
+                              (string_content))
+                            (array
+                              (rule_value_array
+                                (string
+                                  (string_content))))))))))))))
+        (object
+          (pair
+            (string
+              (string_content))
+            (object
+              (pair
+                (string
+                  (string_content))
+                (object
+                  (pair
+                    (string
+                      (string_content))
+                    (array
+                      (rule_value_array
+                        (string
+                          (string_content))))))))))))))

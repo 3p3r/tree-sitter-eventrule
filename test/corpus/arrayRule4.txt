@@ -1,0 +1,36 @@
+================================================================================
+Array Rule 4
+================================================================================
+
+{
+  "metrics": {
+    "metricName": ["CPUUtilization", "ReadLatency"],
+    "namespace": ["AWS/EC2", "AWS/ES"]
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(document
+  (object
+    (pair
+      (string
+        (string_content))
+      (object
+        (pair
+          (string
+            (string_content))
+          (array
+            (rule_value_array
+              (string
+                (string_content))
+              (string
+                (string_content)))))
+        (rule_value_matching
+          (string
+            (string_content))
+          (rule_value_array
+            (string
+              (string_content))
+            (string
+              (string_content))))))))
