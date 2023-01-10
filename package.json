@@ -9,7 +9,8 @@
     "grammar.js",
     "queries",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "tree-sitter-eventrule.wasm"
   ],
   "scripts": {
     "build": "tree-sitter generate && tree-sitter build-wasm",
