@@ -9,3 +9,14 @@
 (rule_exists_matching) @function
 (rule_value_matching) @function
 (rule_value_array) @function
+
+(rule_constant_value) @constant
+(rule_constant_prefix) @constant
+(rule_constant_suffix) @constant
+(rule_constant_equals_ignore_case) @constant
+(rule_constant_wildcard) @constant
+(rule_constant_anything_but) @constant
+(rule_constant_numeric) @constant
+(rule_constant_cidr) @constant
+(rule_constant_exists) @constant
+(rule_constant_or) @constant

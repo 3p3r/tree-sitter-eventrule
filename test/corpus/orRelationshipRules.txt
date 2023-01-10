@@ -75,11 +75,12 @@ $or Relationship Rules
   (array
     (object
       (rule_or_matching
+        (rule_constant_or)
         (object
           (pair
-            (string
-              (string_content))
-            (array
+            (rule_value_matching
+              (rule_constant_value
+                (string_content))
               (rule_value_array
                 (string
                   (string_content))
@@ -87,9 +88,9 @@ $or Relationship Rules
                   (string_content))))))
         (object
           (pair
-            (string
-              (string_content))
-            (array
+            (rule_value_matching
+              (rule_constant_value
+                (string_content))
               (rule_value_array
                 (string
                   (string_content))
@@ -97,11 +98,12 @@ $or Relationship Rules
                   (string_content))))))))
     (object
       (rule_or_matching
+        (rule_constant_or)
         (object
           (pair
-            (string
-              (string_content))
-            (array
+            (rule_value_matching
+              (rule_constant_value
+                (string_content))
               (rule_value_array
                 (string
                   (string_content))
@@ -109,9 +111,9 @@ $or Relationship Rules
                   (string_content))))))
         (object
           (pair
-            (string
-              (string_content))
-            (array
+            (rule_value_matching
+              (rule_constant_value
+                (string_content))
               (rule_value_array
                 (string
                   (string_content))
@@ -122,36 +124,38 @@ $or Relationship Rules
           (string_content))
         (object
           (rule_or_matching
+            (rule_constant_or)
             (object
               (pair
-                (string
-                  (string_content))
-                (array
+                (rule_value_matching
+                  (rule_constant_value
+                    (string_content))
                   (rule_value_array
                     (string
                       (string_content))))))
             (object
               (pair
-                (string
-                  (string_content))
-                (array
+                (rule_value_matching
+                  (rule_constant_value
+                    (string_content))
                   (rule_value_array
                     (string
                       (string_content))))))))))
     (object
       (pair
-        (string
-          (string_content))
-        (array
+        (rule_value_matching
+          (rule_constant_value
+            (string_content))
           (rule_value_array
             (string
               (string_content)))))
       (rule_or_matching
+        (rule_constant_or)
         (object
           (pair
-            (string
-              (string_content))
-            (array
+            (rule_value_matching
+              (rule_constant_value
+                (string_content))
               (rule_value_array
                 (string
                   (string_content))
@@ -159,14 +163,14 @@ $or Relationship Rules
                   (string_content))))))
         (object
           (pair
-            (string
-              (string_content))
-            (array
+            (rule_value_matching
+              (rule_constant_value
+                (string_content))
               (rule_value_array
                 (string
                   (string_content)))))
           (rule_value_matching
-            (string
+            (rule_constant_value
               (string_content))
             (rule_value_array
               (string
@@ -175,26 +179,27 @@ $or Relationship Rules
                 (string_content)))))
         (object
           (pair
-            (string
-              (string_content))
-            (array
+            (rule_value_matching
+              (rule_constant_value
+                (string_content))
               (rule_value_array
                 (string
                   (string_content))))))))
     (object
       (pair
-        (string
-          (string_content))
-        (array
+        (rule_value_matching
+          (rule_constant_value
+            (string_content))
           (rule_value_array
             (string
               (string_content)))))
       (rule_or_matching
+        (rule_constant_or)
         (object
           (pair
-            (string
-              (string_content))
-            (array
+            (rule_value_matching
+              (rule_constant_value
+                (string_content))
               (rule_value_array
                 (string
                   (string_content))
@@ -202,14 +207,14 @@ $or Relationship Rules
                   (string_content))))))
         (object
           (pair
-            (string
-              (string_content))
-            (array
+            (rule_value_matching
+              (rule_constant_value
+                (string_content))
               (rule_value_array
                 (string
                   (string_content)))))
           (rule_value_matching
-            (string
+            (rule_constant_value
               (string_content))
             (rule_value_array
               (string
@@ -217,33 +222,34 @@ $or Relationship Rules
               (string
                 (string_content))))
           (rule_or_matching
+            (rule_constant_or)
             (object
               (pair
-                (string
-                  (string_content))
-                (array
+                (rule_value_matching
+                  (rule_constant_value
+                    (string_content))
                   (rule_value_array
                     (number)))))
             (object
               (pair
-                (string
-                  (string_content))
-                (array
+                (rule_value_matching
+                  (rule_constant_value
+                    (string_content))
                   (rule_value_array
                     (number)))))))
         (object
           (pair
-            (string
-              (string_content))
-            (array
+            (rule_value_matching
+              (rule_constant_value
+                (string_content))
               (rule_value_array
                 (string
                   (string_content))))))))
     (object
       (pair
-        (string
-          (string_content))
-        (array
+        (rule_value_matching
+          (rule_constant_value
+            (string_content))
           (rule_value_array
             (string
               (string_content)))))
@@ -256,13 +262,14 @@ $or Relationship Rules
               (string_content))
             (object
               (pair
-                (string
-                  (string_content))
-                (array
+                (rule_value_matching
+                  (rule_constant_value
+                    (string_content))
                   (rule_value_array
                     (string
                       (string_content)))))))))
       (rule_or_matching
+        (rule_constant_or)
         (object
           (pair
             (string
@@ -281,9 +288,9 @@ $or Relationship Rules
                           (string_content))
                         (object
                           (pair
-                            (string
-                              (string_content))
-                            (array
+                            (rule_value_matching
+                              (rule_constant_value
+                                (string_content))
                               (rule_value_array
                                 (string
                                   (string_content))))))))))))))
@@ -297,9 +304,9 @@ $or Relationship Rules
                   (string_content))
                 (object
                   (pair
-                    (string
-                      (string_content))
-                    (array
+                    (rule_value_matching
+                      (rule_constant_value
+                        (string_content))
                       (rule_value_array
                         (string
                           (string_content))))))))))))))

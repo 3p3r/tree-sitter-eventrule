@@ -4,8 +4,9 @@ module.exports = grammar(require("tree-sitter-json/grammar"), {
 
   conflicts: ($) => [
     [$.rule_value_matching, $.array],
-    [$.rule_value_array, $.array],
     [$.rule_value_array, $._value],
+    [$.rule_value_array, $.array],
+    [$.object, $.pair],
   ],
 
   rules: {
@@ -14,40 +15,54 @@ module.exports = grammar(require("tree-sitter-json/grammar"), {
         "{",
         commaSep(
           choice(
-            $.pair,
             $.rule_value_matching,
             $.rule_prefix_matching,
             $.rule_suffix_matching,
+            $.rule_exactly_matching,
             $.rule_equals_ignore_case_matching,
             $.rule_wildcard_matching,
             $.rule_anything_but_matching,
             $.rule_numeric_matching,
             $.rule_ip_address_matching,
             $.rule_exists_matching,
-            $.rule_or_matching
+            $.rule_or_matching,
+            $.pair
           )
         ),
         "}"
       ),
 
     array: ($, previous) => choice(previous, $.rule_value_array),
+    pair: ($, previous) => choice(previous, $.rule_value_matching),
 
-    rule_value_array: ($) => choice(squareBracketScoped(commaSep($.number)), squareBracketScoped(commaSep($.string))),
-    rule_value_matching: ($) => seq($.string, ":", $.rule_value_array),
-    rule_prefix_matching: ($) => seq('"prefix"', ":", $.string),
-    rule_suffix_matching: ($) => seq('"suffix"', ":", $.string),
-    rule_equals_ignore_case_matching: ($) => seq('"equals-ignore-case"', ":", $.string),
-    rule_wildcard_matching: ($) => seq('"wildcard"', ":", $.string),
+    rule_constant_exactly: ($) => '"exactly"',
+    rule_constant_prefix: ($) => '"prefix"',
+    rule_constant_suffix: ($) => '"suffix"',
+    rule_constant_equals_ignore_case: ($) => '"equals-ignore-case"',
+    rule_constant_wildcard: ($) => '"wildcard"',
+    rule_constant_anything_but: ($) => '"anything-but"',
+    rule_constant_numeric: ($) => '"numeric"',
+    rule_constant_cidr: ($) => '"cidr"',
+    rule_constant_exists: ($) => '"exists"',
+    rule_constant_or: ($) => '"$or"',
+
+    rule_value_array: ($) => squareBracketScoped(choice(commaSep1($.number), commaSep1($.string))),
+    rule_value_matching: ($) => seq(alias($.string, $.rule_constant_value), ":", $.rule_value_array),
+    rule_exactly_matching: ($) => seq($.rule_constant_exactly, ":", $.string),
+    rule_prefix_matching: ($) => seq($.rule_constant_prefix, ":", $.string),
+    rule_suffix_matching: ($) => seq($.rule_constant_suffix, ":", $.string),
+    rule_equals_ignore_case_matching: ($) => seq($.rule_constant_equals_ignore_case, ":", $.string),
+    rule_wildcard_matching: ($) => seq($.rule_constant_wildcard, ":", $.string),
     rule_anything_but_matching: ($) =>
       seq(
-        '"anything-but"',
+        $.rule_constant_anything_but,
         ":",
         choice($.number, $.string, $.rule_value_array, curlyBracketScoped($.rule_prefix_matching))
       ),
     rule_numeric_comparison_sign: ($) => choice('"<"', '">"', '"<="', '">="'),
     rule_numeric_matching: ($) =>
       seq(
-        '"numeric"',
+        $.rule_constant_numeric,
         ":",
         choice(
           $.number,
@@ -56,11 +71,11 @@ module.exports = grammar(require("tree-sitter-json/grammar"), {
           )
         )
       ),
-    rule_ip_address_matching: ($) => seq('"cidr"', ":", $.string),
-    rule_exists_matching: ($) => seq('"exists"', ":", $.boolean),
+    rule_ip_address_matching: ($) => seq($.rule_constant_cidr, ":", $.string),
+    rule_exists_matching: ($) => seq($.rule_constant_exists, ":", $.boolean),
     rule_or_matching: ($) =>
       seq(
-        '"$or"',
+        $.rule_constant_or,
         seq(":", choice(squareBracketScoped(commaSep1($.object)), curlyBracketScoped(commaSep2($.rule_value_matching))))
       ),
 

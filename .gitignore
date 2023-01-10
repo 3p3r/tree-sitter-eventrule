@@ -109,3 +109,4 @@ Cargo.toml
 src/
 pattern.json
 *.wasm
+build

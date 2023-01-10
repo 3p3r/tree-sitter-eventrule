@@ -35,27 +35,30 @@ Normal Rules With Or Wording
   (array
     (object
       (rule_or_matching
+        (rule_constant_or)
         (object
           (rule_ip_address_matching
+            (rule_constant_cidr)
             (string
               (string_content))))))
     (object
       (pair
-        (string
-          (string_content))
-        (array
+        (rule_value_matching
+          (rule_constant_value
+            (string_content))
           (rule_value_array
             (string
               (string_content)))))
       (rule_or_matching
+        (rule_constant_or)
         (rule_value_matching
-          (string
+          (rule_constant_value
             (string_content))
           (rule_value_array
             (string
               (string_content))))
         (rule_value_matching
-          (string
+          (rule_constant_value
             (string_content))
           (rule_value_array
             (string
@@ -69,6 +72,7 @@ Normal Rules With Or Wording
         (array
           (object
             (rule_prefix_matching
+              (rule_constant_prefix)
               (string
                 (string_content))))))
       (pair
@@ -76,14 +80,17 @@ Normal Rules With Or Wording
           (string_content))
         (object
           (rule_or_matching
+            (rule_constant_or)
             (object
               (rule_numeric_matching
+                (rule_constant_numeric)
                 (rule_numeric_comparison_sign)
                 (number)
                 (rule_numeric_comparison_sign)
                 (number)))
             (object
               (rule_ip_address_matching
+                (rule_constant_cidr)
                 (string
                   (string_content))))))))
     (object
@@ -92,13 +99,16 @@ Normal Rules With Or Wording
           (string_content))
         (object
           (rule_or_matching
+            (rule_constant_or)
             (object
               (rule_numeric_matching
+                (rule_constant_numeric)
                 (rule_numeric_comparison_sign)
                 (number)
                 (rule_numeric_comparison_sign)
                 (number)))
             (object
               (rule_numeric_matching
+                (rule_constant_numeric)
                 (rule_numeric_comparison_sign)
                 (number)))))))))
