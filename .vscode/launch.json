@@ -1,0 +1,30 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Current Test (Jest)",
+      "request": "launch",
+      "runtimeArgs": [
+        "run-script",
+        "test",
+        "--",
+        "--runInBand",
+        "--no-cache",
+        "--testPathPattern",
+        "${fileBasenameNoExtension}"
+      ],
+      "runtimeExecutable": "npm",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Current File (TSX)",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/node_modules/.bin/tsx",
+      "args": ["${file}"],
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
