@@ -19,12 +19,17 @@ Usage: rule2rego <rule>.json
 
 ## adding e2e compiler tests
 
+If you want to run the tests locally, you need to have:
+
+- Docker for Tree Sitter to build you a `.wasm` artifact
+- OPA for Jest to build you `.wasm` policies for evaluation
+
 Jest picks up your tests automatically if you follow these instructions:
 
 - Add your rule JSON `<rule name>.json` under `test/fixtures`
 - With the same name, create a directory `<rule name>`
 - Create two additional directories `allows` and `denies` inside it
-- Any JSON you put in either of those two folder is picked as an event
+- Any JSON you put in either of those two folders, is picked as an event JSON
 
 `npm test` output is sorted alphabetically.
 

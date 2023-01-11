@@ -10,6 +10,15 @@ const config = {
   devtool: false,
   output: {
     path: path.resolve(__dirname, "dist"),
+    library: {
+      commonjs: "rule2rego",
+      amd: "rule2rego",
+      root: "RULE2REGO",
+    },
+    libraryTarget: "umd",
+    umdNamedDefine: true,
+    globalObject: `(typeof self !== 'undefined' ? self : this)`,
+    filename: "main.js",
   },
   plugins: [
     new CopyPlugin({

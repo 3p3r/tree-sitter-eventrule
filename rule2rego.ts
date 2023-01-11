@@ -1,6 +1,5 @@
 // AWS Event Rule to OPA Rego Compiler
-import * as Parser from "web-tree-sitter";
-
+import Parser from "web-tree-sitter";
 import { ok } from "assert";
 import { readFile } from "fs/promises";
 import { resolve } from "path";
@@ -259,22 +258,4 @@ export async function compile(input = process.argv[2]) {
 		console.log(body);
 	}
 	return body;
-}
-
-if (require.main === module) {
-	if (process.argv.length !== 3) {
-		console.error("Usage: rule2rego <rule>.json");
-		process.exit(1);
-	}
-
-	if (process.argv[2]?.toLowerCase().endsWith("help")) {
-		console.log("Compiles AWS Event Rule pattern JSON to OPA REGO policy.");
-		console.log("Usage: rule2rego <rule>.json");
-		process.exit(0);
-	}
-
-	compile().catch((e) => {
-		console.error(e);
-		process.exit(1);
-	});
 }
