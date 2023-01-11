@@ -3,21 +3,23 @@ name: Build and Test
 on: [push, pull_request]
 
 jobs:
-  build:
-    name: Build
+  build-wasm:
+    name: Build (WASM)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: bahmutov/npm-install@v1
       - name: Build
-        run: |
-          git clone https://github.com/emscripten-core/emsdk.git
-          cd emsdk
-          ./emsdk install latest
-          ./emsdk activate latest
-          cd ..
-          source ./emsdk/emsdk_env.sh
-          npm run build
+        run: npm run build-wasm
+
+  build-node:
+    name: Build (Node)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: bahmutov/npm-install@v1
+      - name: Build
+        run: npm run build-node
 
   test:
     name: Test

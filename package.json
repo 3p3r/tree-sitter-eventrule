@@ -1,6 +1,6 @@
 {
   "name": "tree-sitter-eventrule",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Grammar for AWS Event Rules: https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns-content-based-filtering.html",
   "main": "bindings/node",
   "files": [
@@ -13,7 +13,9 @@
     "tree-sitter-eventrule.wasm"
   ],
   "scripts": {
-    "build": "tree-sitter generate && npx node-gyp configure && node-gyp build",
+    "build": "npm run build-node",
+    "build-node": "tree-sitter generate && npx node-gyp configure && node-gyp build",
+    "build-wasm": "tree-sitter generate && tree-sitter build-wasm",
     "test": "tree-sitter generate && tree-sitter test"
   },
   "repository": {
@@ -38,9 +40,11 @@
     "@types/node": "^18.11.18",
     "nan": "^2.17.0",
     "node-gyp": "^9.3.1",
+    "tree-sitter": "^0.20.1",
     "tree-sitter-cli": "0.20.6",
     "tree-sitter-json": "0.20.0",
-    "tsx": "^3.12.2"
+    "tsx": "^3.12.2",
+    "web-tree-sitter": "^0.20.7"
   },
   "tree-sitter": [
     {
@@ -51,8 +55,5 @@
       ],
       "first-line-regex": "#!.*\\beventrule$"
     }
-  ],
-  "dependencies": {
-    "tree-sitter": "0.20.0"
-  }
+  ]
 }

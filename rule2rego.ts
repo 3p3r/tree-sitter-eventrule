@@ -1,7 +1,7 @@
 // AWS Event Rule to OPA Rego Compiler
-import Parser, { SyntaxNode } from "tree-sitter";
+import Parser, { SyntaxNode } from "web-tree-sitter";
 
-import { Query } from "tree-sitter";
+import { Query } from "web-tree-sitter";
 import assert from "assert";
 import { readFile } from "fs/promises";
 
@@ -79,8 +79,9 @@ function getNextPairUp(node: Parser.SyntaxNode): Parser.SyntaxNode | null {
 }
 
 const createParser = async (): Promise<Parser> => {
+	await Parser.init();
 	const parser = new Parser();
-	const language = require("./bindings/node");
+	const language = await Parser.Language.load("tree-sitter-eventrule.wasm");
 	parser.setLanguage(language);
 	return parser;
 };
@@ -92,7 +93,7 @@ async function main() {
 	const token = "cap";
 	const ruleQueries = getAllNodeTypes()
 		.map((q) => `(${q}) @${token}`)
-		.map((q) => new Query(parser.getLanguage(), q))
+		.map((q) => parser.getLanguage().query(q))
 		.map((q) => q.captures(tree.rootNode))
 		.flatMap((q) => q);
 	const rego = new Map<string, string[]>();
