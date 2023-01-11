@@ -60,6 +60,7 @@ module.exports = grammar(require("tree-sitter-json/grammar"), {
         choice($.number, $.string, $.rule_value_array, curlyBracketScoped($.rule_prefix_matching))
       ),
     rule_numeric_comparison_sign: ($) => choice('"<"', '">"', '"<="', '">="'),
+    rule_numeric_equality_sign: ($) => '"="',
     rule_numeric_matching: ($) =>
       seq(
         $.rule_constant_numeric,
@@ -67,7 +68,10 @@ module.exports = grammar(require("tree-sitter-json/grammar"), {
         choice(
           $.number,
           squareBracketScoped(
-            choice(seq('"="', ",", $.number), commaSep1(seq($.rule_numeric_comparison_sign, ",", $.number)))
+            choice(
+              seq($.rule_numeric_equality_sign, ",", $.number),
+              commaSep1(seq($.rule_numeric_comparison_sign, ",", $.number))
+            )
           )
         )
       ),

@@ -208,7 +208,7 @@ Anything-but matching 5
 
 {
   "detail": {
-    "state": [ { "anything-but": { "prefix": "init" } } ]
+    "state": [{ "anything-but": { "prefix": "init" } }]
   }
 }
 
@@ -238,11 +238,11 @@ Numeric matching
 
 {
   "detail": {
-    "c-count": [ { "numeric": [ ">", 0, "<=", 5 ] } ],
-    "d-count": [ { "numeric": [ "<", 10 ] } ],
-    "x-limit": [ { "numeric": [ "=", 3.018e2 ] } ]
+    "c-count": [{ "numeric": [">", 0, "<=", 5] }],
+    "d-count": [{ "numeric": ["<", 10] }],
+    "x-limit": [{ "numeric": ["=", 3.018e2] }]
   }
-} 
+}
 
 --------------------------------------------------------------------------------
 
@@ -279,6 +279,7 @@ Numeric matching
             (object
               (rule_numeric_matching
                 (rule_constant_numeric)
+                (rule_numeric_equality_sign)
                 (number)))))))))
 
 ================================================================================
@@ -287,7 +288,7 @@ IP Address Matching
 
 {
   "detail": {
-    "source-ip": [ { "cidr": "10.0.0.0/24" } ]
+    "source-ip": [{ "cidr": "10.0.0.0/24" }]
   }
 }
 
@@ -315,9 +316,9 @@ Exists matching 1
 
 {
   "detail": {
-    "c-count": [ { "exists": true  } ]
+    "c-count": [{ "exists": true }]
   }
-}  
+} 
 
 --------------------------------------------------------------------------------
 
@@ -343,9 +344,9 @@ Exists matching 2
 
 {
   "detail": {
-    "c-count": [ { "exists": false  } ]
+    "c-count": [{ "exists": false }]
   }
-}  
+}
 
 --------------------------------------------------------------------------------
 
@@ -370,13 +371,13 @@ Complex example
 ================================================================================
 
 {
-  "time": [ { "prefix": "2017-10-02" } ],
+  "time": [{ "prefix": "2017-10-02" }],
   "detail": {
-    "state": [ { "anything-but": "initializing" } ],
-    "c-count": [ { "numeric": [ ">", 0, "<=", 5 ] } ],
-    "d-count": [ { "numeric": [ "<", 10 ] } ],
-    "x-limit": [ { "anything-but": [ 100, 200, 300 ] } ],
-    "source-ip": [ { "cidr": "10.0.0.0/8" } ]
+    "state": [{ "anything-but": "initializing" }],
+    "c-count": [{ "numeric": [">", 0, "<=", 5] }],
+    "d-count": [{ "numeric": ["<", 10] }],
+    "x-limit": [{ "anything-but": [100, 200, 300] }],
+    "source-ip": [{ "cidr": "10.0.0.0/8" }]
   }
 }
 
