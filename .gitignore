@@ -110,3 +110,5 @@ src/
 pattern.json
 *.wasm
 build
+*.rego
+*.tar.gz

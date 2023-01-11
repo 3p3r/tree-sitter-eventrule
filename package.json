@@ -21,7 +21,9 @@
     "build": "npm run build-node",
     "build-node": "tree-sitter generate && npx node-gyp configure && node-gyp build",
     "build-wasm": "tree-sitter generate && tree-sitter build-wasm",
-    "test": "tree-sitter generate && tree-sitter test"
+    "test-grammar": "tree-sitter generate && tree-sitter test",
+    "test-compiler": "jest --runInBand --ci",
+    "test": "npm run test-grammar && npm run test-compiler"
   },
   "repository": {
     "type": "git",
@@ -42,13 +44,19 @@
   },
   "homepage": "https://github.com/3p3r/tree-sitter-eventrule#readme",
   "devDependencies": {
+    "@open-policy-agent/opa-wasm": "^1.8.0",
+    "@types/glob": "^8.0.0",
+    "@types/jest": "^29.2.5",
     "@types/node": "^18.11.18",
     "copy-webpack-plugin": "^11.0.0",
+    "glob": "^8.0.3",
+    "jest": "^29.3.1",
     "nan": "^2.17.0",
     "node-gyp": "^9.3.1",
     "tree-sitter": "^0.20.1",
     "tree-sitter-cli": "0.20.6",
     "tree-sitter-json": "0.20.0",
+    "ts-jest": "^29.0.3",
     "ts-loader": "^9.4.2",
     "tsx": "^3.12.2",
     "web-tree-sitter": "^0.20.7",

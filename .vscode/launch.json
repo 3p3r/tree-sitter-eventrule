@@ -6,7 +6,7 @@
       "request": "launch",
       "runtimeArgs": [
         "run-script",
-        "test",
+        "test-compiler",
         "--",
         "--runInBand",
         "--no-cache",

@@ -1,5 +1,5 @@
 // AWS Event Rule to OPA Rego Compiler
-import Parser, { SyntaxNode } from "web-tree-sitter";
+import * as Parser from "web-tree-sitter";
 
 import { ok } from "assert";
 import { readFile } from "fs/promises";
@@ -23,10 +23,17 @@ function getAllNodeTypes(): string[] {
 	return Object.values(NodeType);
 }
 
-function nodeIncludesSubNode(node: SyntaxNode, subnode: SyntaxNode): boolean {
+function nodeIncludesSubNode(
+	node: Parser.SyntaxNode,
+	subnode: Parser.SyntaxNode,
+): boolean {
 	return (
 		node.startIndex <= subnode.startIndex && node.endIndex >= subnode.endIndex
 	);
+}
+
+function unquote(str: string): string {
+	return str[0] === '"' ? str.slice(1, -1) : str;
 }
 
 interface Meta {
@@ -51,8 +58,11 @@ function getJsonPathFromQueryCaptureNode(node: Parser.SyntaxNode): Meta {
 			const name = iterator.children[0].namedChildren[0].text;
 			if (name === '"$or"') {
 				add$or();
-			} else {
-				names.push(JSON.parse(name));
+			} else if (
+				// checks to see if this is a constant key of one of the rule matchings
+				!iterator.namedChildren[0]?.namedChildren[0]?.type.includes("constant")
+			) {
+				names.push(unquote(name));
 			}
 		}
 		iterator = iterator.parent;
@@ -82,7 +92,7 @@ function getNextNodeUp(
 	type = "pair",
 ): Parser.SyntaxNode | null {
 	ok(node.type.startsWith("rule_"));
-	let iterator: SyntaxNode | null = node;
+	let iterator: Parser.SyntaxNode | null = node;
 	while (iterator.type !== type) {
 		iterator = iterator.parent;
 		if (!iterator) {
@@ -102,9 +112,9 @@ const createParser = async (): Promise<Parser> => {
 	return parser;
 };
 
-async function main() {
+export async function compile(input = process.argv[2]) {
 	const parser = await createParser();
-	const source = await readFile(resolve(process.argv[2]), "utf8");
+	const source = await readFile(resolve(input), "utf8");
 	const tree = parser.parse(source);
 	const token = "cap";
 	const ruleQueries = getAllNodeTypes()
@@ -126,14 +136,14 @@ async function main() {
 				if (node.parent?.type !== NodeType.rule_anything_but_matching) {
 					const { path, name } = getJsonPathFromQueryCaptureNode(node);
 					const value = JSON.parse(node.children[2].text);
-					emitRego(name, `startswith(input.${path}, ${JSON.stringify(value)})`);
+					emitRego(name, `startswith(input${path}, ${JSON.stringify(value)})`);
 				}
 				break;
 			}
 			case NodeType.rule_suffix_matching: {
 				const { path, name } = getJsonPathFromQueryCaptureNode(node);
 				const value = JSON.parse(node.children[2].text);
-				emitRego(name, `endswith(input.${path}, ${JSON.stringify(value)})`);
+				emitRego(name, `endswith(input${path}, ${JSON.stringify(value)})`);
 				break;
 			}
 			case NodeType.rule_equals_ignore_case_matching: {
@@ -141,7 +151,7 @@ async function main() {
 				const value = JSON.parse(node.children[2].text);
 				emitRego(
 					name,
-					`lower(input.${path}) == lower(${JSON.stringify(value)})`,
+					`lower(input${path}) == lower(${JSON.stringify(value)})`,
 				);
 				break;
 			}
@@ -150,7 +160,7 @@ async function main() {
 				const value = JSON.parse(node.children[2].text);
 				emitRego(
 					name,
-					`glob.match(${JSON.stringify(value)}, [], input.${path})`,
+					`glob.match(${JSON.stringify(value)}, [], input${path})`,
 				);
 				break;
 			}
@@ -245,21 +255,26 @@ async function main() {
 		.map((k) => `\t${ruleNameForPath(k)}`)
 		.join("\n")}\n}`;
 	const body = `${header}${init}\n${policy}\n${footer}`;
-	console.log(body);
+	if (input === process.argv[2]) {
+		console.log(body);
+	}
+	return body;
 }
 
-if (process.argv.length !== 3) {
-	console.error("Usage: rule2rego <rule>.json");
-	process.exit(1);
-}
+if (require.main === module) {
+	if (process.argv.length !== 3) {
+		console.error("Usage: rule2rego <rule>.json");
+		process.exit(1);
+	}
 
-if (process.argv[2]?.toLowerCase().endsWith("help")) {
-	console.log("Compiles AWS Event Rule pattern JSON to OPA REGO policy.");
-	console.log("Usage: rule2rego <rule>.json");
-	process.exit(0);
-}
+	if (process.argv[2]?.toLowerCase().endsWith("help")) {
+		console.log("Compiles AWS Event Rule pattern JSON to OPA REGO policy.");
+		console.log("Usage: rule2rego <rule>.json");
+		process.exit(0);
+	}
 
-main().catch((e) => {
-	console.error(e);
-	process.exit(1);
-});
+	compile().catch((e) => {
+		console.error(e);
+		process.exit(1);
+	});
+}

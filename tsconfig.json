@@ -8,5 +8,5 @@
     "allowJs": true,
     "baseUrl": "."
   },
-  "include": ["rule2rego.ts"]
+  "include": ["rule2rego.ts", "test"]
 }
