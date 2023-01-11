@@ -1,4 +1,7 @@
 // AWS Event Rule to OPA Rego Compiler
+// fixme: get rid of all JSON.stringify() and JSON.parse() calls.
+// they are used as shortcuts to quickly unwrap tiny inner tree-sitter nodes.
+
 import Parser from "web-tree-sitter";
 import { ok } from "assert";
 import { readFile } from "fs/promises";
