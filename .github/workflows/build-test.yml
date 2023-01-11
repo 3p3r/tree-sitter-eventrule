@@ -3,17 +3,8 @@ name: Build and Test
 on: [push, pull_request]
 
 jobs:
-  build-wasm:
-    name: Build (WASM)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: bahmutov/npm-install@v1
-      - name: Build
-        run: npm run build-wasm
-
-  build-node:
-    name: Build (Node)
+  build:
+    name: Build (Node Build)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -21,14 +12,16 @@ jobs:
       - name: Build
         run: npm run build-node
 
-  build-rule2rego:
-    name: Build (Rule2Rego)
+  bundle:
+    name: Bundle (Rule2Rego)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: bahmutov/npm-install@v1
       - name: Bundle
-        run: npm run bundle
+        run: |
+          npm run build-wasm
+          npm run bundle
 
   test:
     name: Test
