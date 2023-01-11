@@ -1,9 +1,11 @@
 {
   "name": "tree-sitter-eventrule",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Grammar for AWS Event Rules: https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns-content-based-filtering.html",
   "main": "./bindings/node",
-  "bin": "./bin/index.js",
+  "bin": {
+    "rule2rego": "./bin/index.js"
+  },
   "files": [
     "src",
     "bin",
