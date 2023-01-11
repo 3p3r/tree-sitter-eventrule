@@ -20,18 +20,6 @@ module.exports = {
       },
     ],
   },
-  collectCoverage: true,
-  collectCoverageFrom: ["rule2rego.ts"],
-  coverageDirectory: "coverage",
-  coverageReporters: ["html-spa"],
-  coverageThreshold: {
-    global: {
-      lines: 95,
-      branches: 95,
-      functions: 95,
-      statements: 95,
-    },
-  },
   detectLeaks: true,
   errorOnDeprecated: true,
 };

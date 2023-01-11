@@ -1,9 +1,14 @@
 # tree-sitter-eventrule
-Grammar for AWS Event Rules: https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns-content-based-filtering.html
+
+Grammar for AWS Event Rules:
+https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns-content-based-filtering.html
 
 ![Syntax Highlighting](highlight.png)
 
 ## `rule2rego` utility
+
+This utility is shipped with the npm package and is a small compiler that makes
+OPA REGO policies from AWS Event Rule patterns.
 
 ```bash
 $ npm install -g tree-sitter-eventrule
