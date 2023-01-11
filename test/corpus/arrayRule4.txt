@@ -26,11 +26,12 @@ Array Rule 4
                 (string_content))
               (string
                 (string_content)))))
-        (rule_value_matching
-          (rule_constant_value
-            (string_content))
-          (rule_value_array
-            (string
+        (pair
+          (rule_value_matching
+            (rule_constant_value
               (string_content))
-            (string
-              (string_content))))))))
+            (rule_value_array
+              (string
+                (string_content))
+              (string
+                (string_content)))))))))

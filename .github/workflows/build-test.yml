@@ -21,6 +21,15 @@ jobs:
       - name: Build
         run: npm run build-node
 
+  build-rule2rego:
+    name: Build (Rule2Rego)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: bahmutov/npm-install@v1
+      - name: Bundle
+        run: npm run bundle
+
   test:
     name: Test
     runs-on: ubuntu-latest

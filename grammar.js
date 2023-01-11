@@ -5,35 +5,25 @@ module.exports = grammar(require("tree-sitter-json/grammar"), {
   conflicts: ($) => [
     [$.rule_value_matching, $.array],
     [$.rule_value_array, $._value],
-    [$.rule_value_array, $.array],
-    [$.object, $.pair],
   ],
 
   rules: {
-    object: ($) =>
-      seq(
-        "{",
-        commaSep(
-          choice(
-            $.rule_value_matching,
-            $.rule_prefix_matching,
-            $.rule_suffix_matching,
-            $.rule_exactly_matching,
-            $.rule_equals_ignore_case_matching,
-            $.rule_wildcard_matching,
-            $.rule_anything_but_matching,
-            $.rule_numeric_matching,
-            $.rule_ip_address_matching,
-            $.rule_exists_matching,
-            $.rule_or_matching,
-            $.pair
-          )
-        ),
-        "}"
-      ),
-
     array: ($, previous) => choice(previous, $.rule_value_array),
-    pair: ($, previous) => choice(previous, $.rule_value_matching),
+    pair: ($, previous) =>
+      choice(
+        previous,
+        $.rule_value_matching,
+        $.rule_prefix_matching,
+        $.rule_suffix_matching,
+        $.rule_exactly_matching,
+        $.rule_equals_ignore_case_matching,
+        $.rule_wildcard_matching,
+        $.rule_anything_but_matching,
+        $.rule_numeric_matching,
+        $.rule_ip_address_matching,
+        $.rule_exists_matching,
+        $.rule_or_matching
+      ),
 
     rule_constant_exactly: ($) => '"exactly"',
     rule_constant_prefix: ($) => '"prefix"',

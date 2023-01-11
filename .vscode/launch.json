@@ -25,6 +25,15 @@
       "program": "${workspaceFolder}/node_modules/.bin/tsx",
       "args": ["${file}"],
       "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Rule2Rego (TSX)",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/node_modules/.bin/tsx",
+      "args": ["rule2rego.ts", "pattern.json"],
+      "cwd": "${workspaceFolder}"
     }
   ]
 }

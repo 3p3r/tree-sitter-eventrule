@@ -1,9 +1,9 @@
 // AWS Event Rule to OPA Rego Compiler
 import Parser, { SyntaxNode } from "web-tree-sitter";
 
-import { Query } from "web-tree-sitter";
-import assert from "assert";
+import { ok } from "assert";
 import { readFile } from "fs/promises";
+import { resolve } from "path";
 
 enum NodeType {
 	rule_or_matching = "rule_or_matching",
@@ -23,6 +23,12 @@ function getAllNodeTypes(): string[] {
 	return Object.values(NodeType);
 }
 
+function nodeIncludesSubNode(node: SyntaxNode, subnode: SyntaxNode): boolean {
+	return (
+		node.startIndex <= subnode.startIndex && node.endIndex >= subnode.endIndex
+	);
+}
+
 interface Meta {
 	// name of the rule
 	readonly name: string;
@@ -32,18 +38,22 @@ interface Meta {
 
 function getJsonPathFromQueryCaptureNode(node: Parser.SyntaxNode): Meta {
 	const names: string[] = [];
-	let iterator: Parser.SyntaxNode | null = getNextPairUp(node);
+	let iterator: Parser.SyntaxNode | null = getNextNodeUp(node, "pair");
+	const add$or = () => {
+		const indexInParent = iterator!.children[0].namedChildren.findIndex((n) =>
+			nodeIncludesSubNode(n, node),
+		);
+		const current$orCount = names.filter((n) => n.startsWith("$or")).length + 1;
+		names.push(`$or_${indexInParent}_${current$orCount}`);
+	};
 	while (iterator) {
 		if (iterator.type === "pair") {
-			if (iterator.children[0].type === NodeType.rule_value_matching) {
-				names.push(JSON.parse(iterator.children[0].namedChildren[0].text));
+			const name = iterator.children[0].namedChildren[0].text;
+			if (name === '"$or"') {
+				add$or();
 			} else {
-				names.push(JSON.parse(iterator.children[0].text));
+				names.push(JSON.parse(name));
 			}
-		}
-		if (iterator.type === NodeType.rule_or_matching) {
-			const currentOrCount = names.findIndex((n) => n === "$or") + 1;
-			names.push(`$or${currentOrCount}`);
 		}
 		iterator = iterator.parent;
 	}
@@ -53,7 +63,7 @@ function getJsonPathFromQueryCaptureNode(node: Parser.SyntaxNode): Meta {
 	// makes it represent a logical OR
 	const squished: string[] = [];
 	for (let i = 0; i < ordered.length; i++) {
-		if (ordered[i - 1]?.startsWith("$or")) {
+		if (ordered[i - 1]?.startsWith("$or") && !ordered[i].startsWith("$or")) {
 			continue;
 		}
 		squished.push(ordered[i]);
@@ -67,9 +77,13 @@ function getJsonPathFromQueryCaptureNode(node: Parser.SyntaxNode): Meta {
 	};
 }
 
-function getNextPairUp(node: Parser.SyntaxNode): Parser.SyntaxNode | null {
+function getNextNodeUp(
+	node: Parser.SyntaxNode,
+	type = "pair",
+): Parser.SyntaxNode | null {
+	ok(node.type.startsWith("rule_"));
 	let iterator: SyntaxNode | null = node;
-	while (iterator.type !== "pair") {
+	while (iterator.type !== type) {
 		iterator = iterator.parent;
 		if (!iterator) {
 			return null;
@@ -81,14 +95,16 @@ function getNextPairUp(node: Parser.SyntaxNode): Parser.SyntaxNode | null {
 const createParser = async (): Promise<Parser> => {
 	await Parser.init();
 	const parser = new Parser();
-	const language = await Parser.Language.load("tree-sitter-eventrule.wasm");
+	const language = await Parser.Language.load(
+		resolve(__dirname, "tree-sitter-eventrule.wasm"),
+	);
 	parser.setLanguage(language);
 	return parser;
 };
 
 async function main() {
 	const parser = await createParser();
-	const source = await readFile(process.argv[2] || "pattern.json", "utf8");
+	const source = await readFile(resolve(process.argv[2]), "utf8");
 	const tree = parser.parse(source);
 	const token = "cap";
 	const ruleQueries = getAllNodeTypes()
@@ -101,7 +117,7 @@ async function main() {
 		rego.set(name, [...(rego.get(name) || []), expr]);
 	};
 	for (const ruleQuery of ruleQueries) {
-		assert(ruleQuery.name === token);
+		ok(ruleQuery.name === token);
 		const node = ruleQuery.node;
 		const type = node.type;
 		switch (type) {
@@ -203,7 +219,7 @@ async function main() {
 				// and in either situations, this type handled in one of the cases above
 				// NodeType.rule_or_matching:
 				// these are handled by "squishing" them in rule paths.
-				assert(
+				ok(
 					type === NodeType.rule_value_array ||
 						type === NodeType.rule_or_matching,
 				);
@@ -230,6 +246,17 @@ async function main() {
 		.join("\n")}\n}`;
 	const body = `${header}${init}\n${policy}\n${footer}`;
 	console.log(body);
+}
+
+if (process.argv.length !== 3) {
+	console.error("Usage: rule2rego <rule>.json");
+	process.exit(1);
+}
+
+if (process.argv[2]?.toLowerCase().endsWith("help")) {
+	console.log("Compiles AWS Event Rule pattern JSON to OPA REGO policy.");
+	console.log("Usage: rule2rego <rule>.json");
+	process.exit(0);
 }
 
 main().catch((e) => {
