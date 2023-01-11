@@ -31,4 +31,6 @@ jobs:
       - uses: bahmutov/npm-install@v1
       - uses: open-policy-agent/setup-opa@v2
       - name: Test
-        run: npm test
+        run: |
+          npm run build-wasm
+          npm test
