@@ -6,7 +6,7 @@ if (process.argv.length !== 3) {
   process.exit(1);
 }
 
-if (process.argv[2]?.toLowerCase().endsWith("help")) {
+if (process.argv[2].toLowerCase().endsWith("help")) {
   console.log("Compiles AWS Event Rule pattern JSON to OPA REGO policy.");
   console.log("Usage: rule2rego <rule>.json");
   process.exit(0);
