@@ -48,7 +48,7 @@ Normal Rules With Or Wording
         (rule_value_matching
           (rule_constant_value
             (string_content))
-          (rule_value_array
+          (array
             (string
               (string_content)))))
       (pair
@@ -57,13 +57,13 @@ Normal Rules With Or Wording
           (rule_value_matching
             (rule_constant_value
               (string_content))
-            (rule_value_array
+            (array
               (string
                 (string_content))))
           (rule_value_matching
             (rule_constant_value
               (string_content))
-            (rule_value_array
+            (array
               (string
                 (string_content))
               (string

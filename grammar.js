@@ -2,13 +2,9 @@
 module.exports = grammar(require("tree-sitter-json/grammar"), {
   name: "eventrule",
 
-  conflicts: ($) => [
-    [$.rule_value_matching, $.array],
-    [$.rule_value_array, $._value],
-  ],
+  conflicts: ($) => [[$._rule_value_array, $._value]],
 
   rules: {
-    array: ($, previous) => choice(previous, $.rule_value_array),
     pair: ($, previous) =>
       choice(
         previous,
@@ -36,8 +32,8 @@ module.exports = grammar(require("tree-sitter-json/grammar"), {
     rule_constant_exists: ($) => '"exists"',
     rule_constant_or: ($) => '"$or"',
 
-    rule_value_array: ($) => squareBracketScoped(choice(commaSep1($.number), commaSep1($.string))),
-    rule_value_matching: ($) => seq(alias($.string, $.rule_constant_value), ":", $.rule_value_array),
+    _rule_value_array: ($) => squareBracketScoped(choice(commaSep1($.number), commaSep1($.string))),
+    rule_value_matching: ($) => seq(alias($.string, $.rule_constant_value), ":", alias($._rule_value_array, $.array)),
     rule_exactly_matching: ($) => seq($.rule_constant_exactly, ":", $.string),
     rule_prefix_matching: ($) => seq($.rule_constant_prefix, ":", $.string),
     rule_suffix_matching: ($) => seq($.rule_constant_suffix, ":", $.string),
@@ -47,7 +43,12 @@ module.exports = grammar(require("tree-sitter-json/grammar"), {
       seq(
         $.rule_constant_anything_but,
         ":",
-        choice($.number, $.string, $.rule_value_array, curlyBracketScoped($.rule_prefix_matching))
+        choice(
+          $.number,
+          $.string,
+          alias($._rule_value_array, $.array),
+          curlyBracketScoped(alias($.rule_prefix_matching, $.rule_nested_prefix_matching))
+        )
       ),
     rule_numeric_comparison_sign: ($) => choice('"<"', '">"', '"<="', '">="'),
     rule_numeric_equality_sign: ($) => '"="',

@@ -21,13 +21,13 @@ Array Rule 3
           (rule_value_matching
             (rule_constant_value
               (string_content))
-            (rule_value_array
+            (array
               (string
                 (string_content)))))
         (pair
           (rule_value_matching
             (rule_constant_value
               (string_content))
-            (rule_value_array
+            (array
               (string
                 (string_content)))))))))

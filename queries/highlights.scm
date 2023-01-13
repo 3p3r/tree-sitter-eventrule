@@ -7,8 +7,8 @@
 (rule_numeric_matching) @function
 (rule_ip_address_matching) @function
 (rule_exists_matching) @function
+(rule_exactly_matching) @function
 (rule_value_matching) @function
-(rule_value_array) @function
 
 (rule_constant_value) @constant
 (rule_constant_prefix) @constant

@@ -173,7 +173,7 @@ Anything-but matching 3
               (pair
                 (rule_anything_but_matching
                   (rule_constant_anything_but)
-                  (rule_value_array
+                  (array
                     (string
                       (string_content))
                     (string
@@ -205,7 +205,7 @@ Anything-but matching 4
               (pair
                 (rule_anything_but_matching
                   (rule_constant_anything_but)
-                  (rule_value_array
+                  (array
                     (number)
                     (number)
                     (number)))))))))))
@@ -236,7 +236,7 @@ Anything-but matching 5
               (pair
                 (rule_anything_but_matching
                   (rule_constant_anything_but)
-                  (rule_prefix_matching
+                  (rule_nested_prefix_matching
                     (rule_constant_prefix)
                     (string
                       (string_content))))))))))))
@@ -454,7 +454,7 @@ Complex example
               (pair
                 (rule_anything_but_matching
                   (rule_constant_anything_but)
-                  (rule_value_array
+                  (array
                     (number)
                     (number)
                     (number)))))))
@@ -488,7 +488,7 @@ Normal "Or"
       (rule_value_matching
         (rule_constant_value
           (string_content))
-        (rule_value_array
+        (array
           (string
             (string_content)))))
     (pair
@@ -499,7 +499,7 @@ Normal "Or"
             (rule_value_matching
               (rule_constant_value
                 (string_content))
-              (rule_value_array
+              (array
                 (string
                   (string_content))
                 (string
@@ -509,7 +509,7 @@ Normal "Or"
             (rule_value_matching
               (rule_constant_value
                 (string_content))
-              (rule_value_array
+              (array
                 (string
                   (string_content))
                 (string
@@ -540,7 +540,7 @@ Parallel "Or"
             (rule_value_matching
               (rule_constant_value
                 (string_content))
-              (rule_value_array
+              (array
                 (string
                   (string_content))
                 (string
@@ -550,7 +550,7 @@ Parallel "Or"
             (rule_value_matching
               (rule_constant_value
                 (string_content))
-              (rule_value_array
+              (array
                 (string
                   (string_content))
                 (string
@@ -567,7 +567,7 @@ Parallel "Or"
                 (rule_value_matching
                   (rule_constant_value
                     (string_content))
-                  (rule_value_array
+                  (array
                     (string
                       (string_content))))))
             (object
@@ -575,7 +575,7 @@ Parallel "Or"
                 (rule_value_matching
                   (rule_constant_value
                     (string_content))
-                  (rule_value_array
+                  (array
                     (string
                       (string_content))))))))))))
 
@@ -605,7 +605,7 @@ Parallel "Or"
       (rule_value_matching
         (rule_constant_value
           (string_content))
-        (rule_value_array
+        (array
           (string
             (string_content)))))
     (pair
@@ -616,7 +616,7 @@ Parallel "Or"
             (rule_value_matching
               (rule_constant_value
                 (string_content))
-              (rule_value_array
+              (array
                 (string
                   (string_content))
                 (string
@@ -626,14 +626,14 @@ Parallel "Or"
             (rule_value_matching
               (rule_constant_value
                 (string_content))
-              (rule_value_array
+              (array
                 (string
                   (string_content)))))
           (pair
             (rule_value_matching
               (rule_constant_value
                 (string_content))
-              (rule_value_array
+              (array
                 (string
                   (string_content))
                 (string
@@ -643,7 +643,7 @@ Parallel "Or"
             (rule_value_matching
               (rule_constant_value
                 (string_content))
-              (rule_value_array
+              (array
                 (string
                   (string_content))))))))))
 
@@ -674,7 +674,7 @@ Nested "Or" and "And"
       (rule_value_matching
         (rule_constant_value
           (string_content))
-        (rule_value_array
+        (array
           (string
             (string_content)))))
     (pair
@@ -685,7 +685,7 @@ Nested "Or" and "And"
             (rule_value_matching
               (rule_constant_value
                 (string_content))
-              (rule_value_array
+              (array
                 (string
                   (string_content))
                 (string
@@ -695,14 +695,14 @@ Nested "Or" and "And"
             (rule_value_matching
               (rule_constant_value
                 (string_content))
-              (rule_value_array
+              (array
                 (string
                   (string_content)))))
           (pair
             (rule_value_matching
               (rule_constant_value
                 (string_content))
-              (rule_value_array
+              (array
                 (string
                   (string_content))
                 (string
@@ -715,20 +715,20 @@ Nested "Or" and "And"
                   (rule_value_matching
                     (rule_constant_value
                       (string_content))
-                    (rule_value_array
+                    (array
                       (number)))))
               (object
                 (pair
                   (rule_value_matching
                     (rule_constant_value
                       (string_content))
-                    (rule_value_array
+                    (array
                       (number))))))))
         (object
           (pair
             (rule_value_matching
               (rule_constant_value
                 (string_content))
-              (rule_value_array
+              (array
                 (string
                   (string_content))))))))))
