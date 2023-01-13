@@ -1,7 +1,13 @@
 # tree-sitter-eventrule
 
 Grammar for AWS Event Rules:
-https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns-content-based-filtering.html
+<https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns-content-based-filtering.html>
+
+Event Rules are JSON documents that are used to filter other JSON documents.  
+On AWS EventBridge, they are used to filter AWS CloudWatch Events.  
+
+Comparing to other policy formats, Event Rules are limited in terms of features,
+but are easy to understand for non-technical folks and are an extension to JSON.
 
 ![Syntax Highlighting](highlight.png)
 
