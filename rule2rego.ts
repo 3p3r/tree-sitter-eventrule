@@ -68,10 +68,10 @@ function getJsonPathFromQueryCaptureNode(node: Parser.SyntaxNode): RuleData {
 	const orderedPaths = paths.reverse();
 	const orderedNames = names.reverse();
 	ok(orderedNames.length > 0);
-	const ruleName = orderedPaths
+	const ruleName = orderedNames
 		.map((n) => n.replace(/[^\w\d]+/g, ""))
 		.join("_");
-	const inputPath = orderedNames.map((n) => `["${n}"]`).join("");
+	const inputPath = orderedPaths.map((n) => `["${n}"]`).join("");
 	return { name: `allow_${ruleName || "or"}`, inputPath };
 }
 
