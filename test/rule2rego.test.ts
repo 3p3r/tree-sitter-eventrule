@@ -1,9 +1,11 @@
+// rome-ignore lint/suspicious/noExplicitAny: <explanation>
+type ExplicitAny = any;
 interface Fixture {
-	policy: { evaluate: (input: any) => any[] };
+	policy: { evaluate: (input: ExplicitAny) => ExplicitAny[] };
 	name: string;
 	source: string;
-	allows: any[];
-	denies: any[];
+	allows: ExplicitAny[];
+	denies: ExplicitAny[];
 }
 
 function getLoadedFixtures() {

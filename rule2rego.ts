@@ -53,7 +53,7 @@ function getJsonPathFromQueryCaptureNode(node: Parser.SyntaxNode): string {
 		iterator = iterator.parent;
 	}
 	const ordered = names.reverse();
-	// ok(ordered.length > 0);
+	ok(ordered.length > 0);
 	const path = ordered.map((n) => `["${n}"]`).join("");
 	return path;
 }
@@ -68,68 +68,76 @@ const createParser = async (): Promise<Parser> => {
 	return parser;
 };
 
-function emitRuleOr(n: Parser.SyntaxNode, o: string[]): string {
+function emitRuleOr(context: Context): string {
 	let out = "";
-	const ruleName = `rule_${o.length + 1}_or`;
+	const ruleName = `rule_${context.rules.length + 1}_or`;
 	out += `default ${ruleName} = false\n`;
-	const childPairs = n.namedChildren.filter(
-		(c) =>
-			c.type === PrimitiveNodeType.object &&
-			c.namedChildren[0]?.type === PrimitiveNodeType.pair,
+	const childObjects = context.node.namedChildren.filter(
+		(c) => c.type === PrimitiveNodeType.object,
 	);
-	const childRules = childPairs
-		.map((c) => c.namedChildren[0].namedChildren[0])
-		.filter((c) => getAllRuleNodeTypes().includes(c.type));
-	for (const childRule of childRules) {
-		out += `${ruleName} {\n\t${emitRule(childRule, o, true)}\n}\n`;
+	for (const childObject of childObjects) {
+		const childRules = childObject.namedChildren
+			.filter(
+				(c) =>
+					c.type === PrimitiveNodeType.pair &&
+					getAllRuleNodeTypes().includes(c.namedChildren[0].type),
+			)
+			.map((c) => c.namedChildren[0]);
+		if (childRules.length > 0) {
+			out += `${ruleName} {\n`;
+			for (const childRule of childRules) {
+				out += `\t${emitRule({ ...context, node: childRule })}\n`;
+			}
+			out += "\n}\n";
+		}
 	}
-	o.push(out);
+	context.rules.push(out);
 	return ruleName;
 }
-function emitRulePrefix(n: Parser.SyntaxNode, o: string[]): string {
-	const ruleName = `rule_${o.length + 1}_prefix`;
-	const rulePath = getJsonPathFromQueryCaptureNode(n);
-	const ruleTest = unquote(n.namedChildren[1].text);
-	o.push(
+function emitRulePrefix(context: Context): string {
+	const ruleName = `rule_${context.rules.length + 1}_prefix`;
+	const rulePath = getJsonPathFromQueryCaptureNode(context.node);
+	const ruleTest = unquote(context.node.namedChildren[1].text);
+	context.rules.push(
 		`default ${ruleName} = false\n${ruleName} {\n\tstartswith(input${rulePath}, "${ruleTest}")\n}`,
 	);
 	return ruleName;
 }
-function emitRuleSuffix(n: Parser.SyntaxNode, o: string[]): string {
-	const ruleName = `rule_${o.length + 1}_suffix`;
-	const rulePath = getJsonPathFromQueryCaptureNode(n);
-	const ruleTest = unquote(n.namedChildren[1].text);
-	o.push(
+function emitRuleSuffix(context: Context): string {
+	const ruleName = `rule_${context.rules.length + 1}_suffix`;
+	const rulePath = getJsonPathFromQueryCaptureNode(context.node);
+	const ruleTest = unquote(context.node.namedChildren[1].text);
+	context.rules.push(
 		`default ${ruleName} = false\n${ruleName} {\n\tendswith(input${rulePath}, "${ruleTest}")\n}`,
 	);
 	return ruleName;
 }
-function emitRuleEqualsIgnoreCase(n: Parser.SyntaxNode, o: string[]): string {
-	const ruleName = `rule_${o.length + 1}_equals_ignore_case`;
-	const rulePath = getJsonPathFromQueryCaptureNode(n);
-	const ruleTest = unquote(n.namedChildren[1].text);
-	o.push(
+function emitRuleEqualsIgnoreCase(context: Context): string {
+	const ruleName = `rule_${context.rules.length + 1}_equals_ignore_case`;
+	const rulePath = getJsonPathFromQueryCaptureNode(context.node);
+	const ruleTest = unquote(context.node.namedChildren[1].text);
+	context.rules.push(
 		`default ${ruleName} = false\n${ruleName} {\n\tlower(input${rulePath}) == lower("${ruleTest}")\n}`,
 	);
 	return ruleName;
 }
-function emitRuleWildcard(n: Parser.SyntaxNode, o: string[]): string {
-	const ruleName = `rule_${o.length + 1}_wildcard`;
-	const rulePath = getJsonPathFromQueryCaptureNode(n);
-	const ruleTest = unquote(n.namedChildren[1].text);
-	o.push(
+function emitRuleWildcard(context: Context): string {
+	const ruleName = `rule_${context.rules.length + 1}_wildcard`;
+	const rulePath = getJsonPathFromQueryCaptureNode(context.node);
+	const ruleTest = unquote(context.node.namedChildren[1].text);
+	context.rules.push(
 		`default ${ruleName} = false\n${ruleName} {\n\tglob.match("${ruleTest}", [], input${rulePath})\n}`,
 	);
 	return ruleName;
 }
-function emitRuleAnythingBut(n: Parser.SyntaxNode, o: string[]): string {
+function emitRuleAnythingBut(context: Context): string {
 	let out = "";
-	const ruleName = `rule_${o.length + 1}_anything_but`;
-	const rulePath = getJsonPathFromQueryCaptureNode(n);
-	const ruleTest = n.namedChildren[1];
+	const ruleName = `rule_${context.rules.length + 1}_anything_but`;
+	const rulePath = getJsonPathFromQueryCaptureNode(context.node);
+	const ruleTest = context.node.namedChildren[1];
 	out += `default ${ruleName} = false\n`;
 	if (ruleTest.type === NestedNodeType.rule_nested_prefix_matching) {
-		out += `${ruleName} {\n\t${emitRulePrefix(ruleTest, o)}\n}`;
+		out += `${ruleName} {\n\t${emitRule({ ...context, node: ruleTest })}\n}`;
 	}
 	if (ruleTest.type === PrimitiveNodeType.array) {
 		const val = ruleTest.text.slice(1, -1);
@@ -143,98 +151,122 @@ function emitRuleAnythingBut(n: Parser.SyntaxNode, o: string[]): string {
 		const val = ruleTest.text;
 		out += `${ruleName} {\n\tinput${rulePath} != ${val}\n}`;
 	}
-	o.push(out);
+	context.rules.push(out);
 	return ruleName;
 }
-function emitRuleNumeric(n: Parser.SyntaxNode, o: string[]): string {
+function emitRuleNumeric(context: Context): string {
 	let out = "";
-	const ruleName = `rule_${o.length + 1}_numeric`;
-	const rulePath = getJsonPathFromQueryCaptureNode(n);
-	const firstSign = unquote(n.namedChildren[1].text);
-	const firstNum = unquote(n.namedChildren[2].text);
+	const ruleName = `rule_${context.rules.length + 1}_numeric`;
+	const rulePath = getJsonPathFromQueryCaptureNode(context.node);
+	const firstSign = unquote(context.node.namedChildren[1].text);
+	const firstNum = unquote(context.node.namedChildren[2].text);
 	out += `default ${ruleName} = false\n${ruleName} {\n\tinput${rulePath} ${firstSign} ${firstNum}\n`;
-	const secondSign = unquote(n.namedChildren[3]?.text || "");
-	const secondNum = unquote(n.namedChildren[4]?.text || "");
+	const secondSign = unquote(context.node.namedChildren[3]?.text || "");
+	const secondNum = unquote(context.node.namedChildren[4]?.text || "");
 	if (secondSign && secondNum) {
 		out += `\tinput${rulePath} ${secondSign} ${secondNum}\n`;
 	}
 	out += "}";
-	o.push(out);
+	context.rules.push(out);
 	return ruleName;
 }
-function emitRuleIpAddress(n: Parser.SyntaxNode, o: string[]): string {
-	const ruleName = `rule_${o.length + 1}_ip_address`;
-	const rulePath = getJsonPathFromQueryCaptureNode(n);
-	const ruleTest = unquote(n.namedChildren[1].text);
-	o.push(
+function emitRuleIpAddress(context: Context): string {
+	const ruleName = `rule_${context.rules.length + 1}_ip_address`;
+	const rulePath = getJsonPathFromQueryCaptureNode(context.node);
+	const ruleTest = unquote(context.node.namedChildren[1].text);
+	context.rules.push(
 		`default ${ruleName} = false\n${ruleName} {\n\tnet.cidr_contains("${ruleTest}", input${rulePath})\n}`,
 	);
 	return ruleName;
 }
-function emitRuleExactly(n: Parser.SyntaxNode, o: string[]): string {
-	const ruleName = `rule_${o.length + 1}_exactly`;
-	const rulePath = getJsonPathFromQueryCaptureNode(n);
-	const ruleTest = unquote(n.namedChildren[1].text);
-	o.push(
+function emitRuleExactly(context: Context): string {
+	const ruleName = `rule_${context.rules.length + 1}_exactly`;
+	const rulePath = getJsonPathFromQueryCaptureNode(context.node);
+	const ruleTest = unquote(context.node.namedChildren[1].text);
+	context.rules.push(
 		`default ${ruleName} = false\n${ruleName} {\n\tinput${rulePath} == "${ruleTest}"\n}`,
 	);
 	return ruleName;
 }
-function emitRuleExists(n: Parser.SyntaxNode, o: string[]): string {
-	const ruleName = `rule_${o.length + 1}_exists`;
-	const rulePath = getJsonPathFromQueryCaptureNode(n);
-	const ruleTest = n.namedChildren[1].text === "true";
-	o.push(
+function emitRuleExists(context: Context): string {
+	const ruleName = `rule_${context.rules.length + 1}_exists`;
+	const rulePath = getJsonPathFromQueryCaptureNode(context.node);
+	const ruleTest = context.node.namedChildren[1].text === "true";
+	context.rules.push(
 		`default ${ruleName} = false\n${ruleName} {\n\t${
 			ruleTest ? `input${rulePath}` : `not input${rulePath}`
 		}\n}`,
 	);
 	return ruleName;
 }
-function emitRuleValue(n: Parser.SyntaxNode, o: string[], $or = false): string {
-	// hack alert: these are processed when its parent $or processes it
-	if (n.parent?.parent?.parent?.type === NodeType.rule_or_matching && !$or) {
-		return "";
-	}
-	const ruleName = `rule_${o.length + 1}_value`;
-	const rulePath = getJsonPathFromQueryCaptureNode(n);
-	const ruleTest = n.namedChildren[1].text.slice(1, -1);
-	o.push(
+function emitRuleValue(context: Context): string {
+	const ruleName = `rule_${context.rules.length + 1}_value`;
+	const rulePath = getJsonPathFromQueryCaptureNode(context.node);
+	const ruleTest = context.node.namedChildren[1].text.slice(1, -1);
+	context.rules.push(
 		`default ${ruleName} = false\n${ruleName} {\n\t({ ${ruleTest} } & { input${rulePath} }) == { input${rulePath} }\n}`,
 	);
 	return ruleName;
 }
 
-function emitRule(n: Parser.SyntaxNode, o: string[], nested = false): string {
-	switch (n.type) {
-		case NodeType.rule_or_matching:
-			return emitRuleOr(n, o);
-		case NodeType.rule_prefix_matching:
-			return emitRulePrefix(n, o);
-		case NodeType.rule_suffix_matching:
-			return emitRuleSuffix(n, o);
-		case NodeType.rule_equals_ignore_case_matching:
-			return emitRuleEqualsIgnoreCase(n, o);
-		case NodeType.rule_wildcard_matching:
-			return emitRuleWildcard(n, o);
-		case NodeType.rule_anything_but_matching:
-			return emitRuleAnythingBut(n, o);
-		case NodeType.rule_numeric_matching:
-			return emitRuleNumeric(n, o);
-		case NodeType.rule_ip_address_matching:
-			return emitRuleIpAddress(n, o);
-		case NodeType.rule_exactly_matching:
-			return emitRuleExactly(n, o);
-		case NodeType.rule_exists_matching:
-			return emitRuleExists(n, o);
-		case NodeType.rule_value_matching:
-			return emitRuleValue(n, o, nested);
-		default:
-			ok(false, `unhandled node type: ${n.type}`);
+function emitRule(context: Context): string {
+	if (context.ruleCache.has(context.node.id)) {
+		return context.ruleCache.get(context.node.id);
 	}
+	let iterator: Parser.SyntaxNode | null = context.node.parent;
+	let root = true;
+	while (iterator) {
+		if (getAllRuleNodeTypes().includes(iterator.type)) {
+			root = false;
+			break;
+		}
+		iterator = iterator.parent;
+	}
+	const ruleName = (() => {
+		switch (context.node.type) {
+			case NodeType.rule_or_matching:
+				return emitRuleOr(context);
+			case NodeType.rule_prefix_matching:
+				return emitRulePrefix(context);
+			case NodeType.rule_suffix_matching:
+				return emitRuleSuffix(context);
+			case NodeType.rule_equals_ignore_case_matching:
+				return emitRuleEqualsIgnoreCase(context);
+			case NodeType.rule_wildcard_matching:
+				return emitRuleWildcard(context);
+			case NodeType.rule_anything_but_matching:
+				return emitRuleAnythingBut(context);
+			case NodeType.rule_numeric_matching:
+				return emitRuleNumeric(context);
+			case NodeType.rule_ip_address_matching:
+				return emitRuleIpAddress(context);
+			case NodeType.rule_exactly_matching:
+				return emitRuleExactly(context);
+			case NodeType.rule_exists_matching:
+				return emitRuleExists(context);
+			case NodeType.rule_value_matching:
+				return emitRuleValue(context);
+			default:
+				ok(false, `unhandled node type: ${context.node.type}`);
+		}
+	})();
+	if (root) {
+		context.ruleRoots.add(ruleName);
+	}
+	context.ruleCache.set(context.node.id, ruleName);
+	return ruleName;
+}
+
+interface Context {
+	readonly rules: string[];
+	readonly ruleCache: Map<number, string>;
+	readonly ruleRoots: Set<string>;
+	readonly node: Parser.SyntaxNode;
 }
 
 export async function compile(input = process.argv[2]) {
+	const ruleCache = new Map<number, string>();
+	const ruleRoots = new Set<string>();
 	const parser = await createParser();
 	const source = await readFile(resolve(input), "utf8");
 	const tree = parser.parse(source);
@@ -245,18 +277,14 @@ export async function compile(input = process.argv[2]) {
 		.map((q) => q.captures(tree.rootNode))
 		.flatMap((q) => q);
 	const rules: string[] = [];
-	const allows: string[] = [];
 	for (const ruleQuery of ruleQueries) {
 		ok(ruleQuery.name === token);
 		const node = ruleQuery.node;
-		allows.push(emitRule(node, rules));
+		emitRule({ node, rules, ruleCache, ruleRoots });
 	}
 	const header = "package rule2rego\ndefault allow := false";
 	const policy = rules.join("\n");
-	const footer = `allow {\n${allows
-		.filter(Boolean)
-		.map((a) => `\t${a}`)
-		.join("\n")}\n}`;
+	const footer = `allow {\n\t${Array.from(ruleRoots).join("\n\t")}\n}`;
 	const body = `${header}\n${policy}\n${footer}`.replace(/\n\n/g, "\n");
 	if (input === process.argv[2]) {
 		console.log(body);
