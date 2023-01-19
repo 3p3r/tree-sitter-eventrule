@@ -158,7 +158,8 @@ function emitRuleAnythingBut(context: Context): string {
 	}
 	if (ruleTest.type === PrimitiveNodeType.array) {
 		const val = ruleTest.text.slice(1, -1);
-		out += `${name} {\n\t{ ${val} } & { input${inputPath} } != { input${inputPath} }\n}`;
+		out += `${name} {\n\t{ ${val} } & { input${inputPath} } != { input${inputPath} }`;
+		out += `\n\tcount([match | v := input${inputPath}[_]; s := [ ${val} ][_]; s == v; match := v]) == 0\n}`;
 	}
 	if (ruleTest.type === PrimitiveNodeType.string) {
 		const val = unquote(ruleTest.text);
