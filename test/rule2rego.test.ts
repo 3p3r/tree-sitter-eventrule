@@ -19,7 +19,6 @@ describe("rule2rego tests", () => {
 			fixture.allows.forEach((input, i) => {
 				it(`allows: sample ${i}`, () => {
 					const result = fixture.policy.evaluate(input);
-					expect(result).not.toBeNull();
 					expect(result.length).toBe(1);
 					expect(result[0].result.allow).toBeTruthy();
 				});
@@ -27,9 +26,8 @@ describe("rule2rego tests", () => {
 			fixture.denies.forEach((input, i) => {
 				it(`denies: sample ${i}`, () => {
 					const result = fixture.policy.evaluate(input);
-					expect(result).not.toBeNull();
 					expect(result.length).toBe(1);
-					expect(result[0].result.deny).toBeFalsy();
+					expect(result[0].result.allow).toBeFalsy();
 				});
 			});
 		});
