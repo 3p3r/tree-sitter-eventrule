@@ -111,7 +111,14 @@ function emitRuleOr(context: Context): string {
 	return name;
 }
 function emitRulePrefix(context: Context): string {
-	const { name, inputPath } = getJsonPathFromQueryCaptureNode(context.node);
+	const { name: firstPart, inputPath } = getJsonPathFromQueryCaptureNode(
+    context.node,
+  );
+  const secondPart =
+  context.node.parent?.type === NodeType.rule_anything_but_matching
+  	? "_prefix"
+  	: "";
+  const name = `${firstPart}${secondPart}`;
 	const ruleTest = unquote(context.node.namedChildren[1].text);
 	context.rules.push(
 		`${name} {\n\tstartswith(input${inputPath}, "${ruleTest}")\n}`,
@@ -147,7 +154,7 @@ function emitRuleAnythingBut(context: Context): string {
 	const { name, inputPath } = getJsonPathFromQueryCaptureNode(context.node);
 	const ruleTest = context.node.namedChildren[1];
 	if (ruleTest.type === NestedNodeType.rule_nested_prefix_matching) {
-		out += `${name} {\n\t${emitRule({ ...context, node: ruleTest })}\n}`;
+		out += `${name} {\n\tnot ${emitRule({ ...context, node: ruleTest })}\n}`;
 	}
 	if (ruleTest.type === PrimitiveNodeType.array) {
 		const val = ruleTest.text.slice(1, -1);
@@ -229,6 +236,7 @@ function emitRule(context: Context): string {
 		switch (context.node.type) {
 			case NodeType.rule_or_matching:
 				return emitRuleOr(context);
+      case NestedNodeType.rule_nested_prefix_matching:
 			case NodeType.rule_prefix_matching:
 				return emitRulePrefix(context);
 			case NodeType.rule_suffix_matching:
