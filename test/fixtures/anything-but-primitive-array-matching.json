@@ -4,7 +4,7 @@
       "sessionContext": {
         "sessionIssuer": {
           "arn": [
-            {"anything-but": ["arn:aws:iam:000000000000:role/bad-role"]}
+            {"anything-but": ["arn:aws:iam:000000000000:role/bad-role", "arn:aws:iam:000000000000:role/bad-role2"]}
           ]
         }
       }
