@@ -151,7 +151,7 @@ function emitRuleAnythingBut(context: Context): string {
 	}
 	if (ruleTest.type === PrimitiveNodeType.array) {
 		const val = ruleTest.text.slice(1, -1);
-		out += `${name} {\n\t{ ${val} } & { input[${inputPath}] } != { input[${inputPath}] }\n}`;
+		out += `${name} {\n\t{ ${val} } & { input${inputPath} } != { input${inputPath} }\n}`;
 	}
 	if (ruleTest.type === PrimitiveNodeType.string) {
 		const val = unquote(ruleTest.text);
