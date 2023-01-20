@@ -120,16 +120,26 @@ function emitRulePrefix(context: Context): string {
   	: "";
   const name = `${firstPart}${secondPart}`;
 	const ruleTest = unquote(context.node.namedChildren[1].text);
+	// handle input value as string
 	context.rules.push(
 		`${name} {\n\tstartswith(input${inputPath}, "${ruleTest}")\n}`,
+	);
+	// handle input value as array
+	context.rules.push(
+		`${name} {\n\tstartswith(input${inputPath}[_], "${ruleTest}")\n}`,
 	);
 	return name;
 }
 function emitRuleSuffix(context: Context): string {
 	const { name, inputPath } = getJsonPathFromQueryCaptureNode(context.node);
 	const ruleTest = unquote(context.node.namedChildren[1].text);
+	// handle input value as string
 	context.rules.push(
 		`${name} {\n\tendswith(input${inputPath}, "${ruleTest}")\n}`,
+	);
+	// handle input value as array
+	context.rules.push(
+		`${name} {\n\tendswith(input${inputPath}[_], "${ruleTest}")\n}`,
 	);
 	return name;
 }
@@ -137,7 +147,10 @@ function emitRuleEqualsIgnoreCase(context: Context): string {
 	const { name, inputPath } = getJsonPathFromQueryCaptureNode(context.node);
 	const ruleTest = unquote(context.node.namedChildren[1].text);
 	context.rules.push(
-		`${name} {\n\tlower(input${inputPath}) == lower("${ruleTest}")\n}`,
+		`${name} {\n\tlower(input${inputPath}) == "${ruleTest.toLowerCase()}"\n}`,
+	);
+	context.rules.push(
+		`${name} {\n\tlower(input${inputPath}[_]) == "${ruleTest.toLowerCase()}"\n}`,
 	);
 	return name;
 }
@@ -173,18 +186,21 @@ function emitRuleAnythingBut(context: Context): string {
 	return name;
 }
 function emitRuleNumeric(context: Context): string {
-	let out = "";
 	const { name, inputPath } = getJsonPathFromQueryCaptureNode(context.node);
 	const firstSign = unquote(context.node.namedChildren[1].text);
 	const firstNum = unquote(context.node.namedChildren[2].text);
-	out += `${name} {\n\tinput${inputPath} ${firstSign} ${firstNum}\n`;
+	const rules = ['', ''];
+	rules[0] += `${name} {\n\tinput${inputPath} ${firstSign} ${firstNum}\n`;
+	rules[1] += `${name} {\n\tinput${inputPath}[_] ${firstSign} ${firstNum}\n`;
 	const secondSign = unquote(context.node.namedChildren[3]?.text || "");
 	const secondNum = unquote(context.node.namedChildren[4]?.text || "");
 	if (secondSign && secondNum) {
-		out += `\tinput${inputPath} ${secondSign} ${secondNum}\n`;
+		rules[0] += `\tinput${inputPath} ${secondSign} ${secondNum}\n`;
+		rules[1] += `\tinput${inputPath}[_] ${secondSign} ${secondNum}\n`;
 	}
-	out += "}";
-	context.rules.push(out);
+	rules[0] += "}";
+	rules[1] += "}";
+	context.rules.push(...rules);
 	return name;
 }
 function emitRuleIpAddress(context: Context): string {
@@ -192,6 +208,9 @@ function emitRuleIpAddress(context: Context): string {
 	const ruleTest = unquote(context.node.namedChildren[1].text);
 	context.rules.push(
 		`${name} {\n\tnet.cidr_contains("${ruleTest}", input${inputPath})\n}`,
+	);
+	context.rules.push(
+		`${name} {\n\tnet.cidr_contains("${ruleTest}", input${inputPath}[_])\n}`,
 	);
 	return name;
 }
@@ -217,6 +236,11 @@ function emitRuleValue(context: Context): string {
 	context.rules.push(
 		`${name} {\n\t({ ${ruleTest} } & { input${inputPath} }) == { input${inputPath} }\n}`,
 	);
+	if(context.node?.parent?.parent?.parent?.type !== NodeType.rule_or_matching) {
+		context.rules.push(
+			`${name} {\n\tcount([match | v := input${inputPath}[_]; s := [ ${ruleTest} ][_]; s == v; match := v]) > 0\n}`
+		);
+	}
 	return name;
 }
 

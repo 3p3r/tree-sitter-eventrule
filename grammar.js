@@ -32,7 +32,7 @@ module.exports = grammar(require("tree-sitter-json/grammar"), {
     rule_constant_exists: ($) => '"exists"',
     rule_constant_or: ($) => '"$or"',
 
-    _rule_value_array: ($) => squareBracketScoped(choice(commaSep1($.number), commaSep1($.string))),
+    _rule_value_array: ($) => squareBracketScoped(choice($.null, commaSep1($.number), commaSep1($.string))),
     rule_value_matching: ($) => seq(alias($.string, $.rule_constant_value), ":", alias($._rule_value_array, $.array)),
     rule_exactly_matching: ($) => seq($.rule_constant_exactly, ":", $.string),
     rule_prefix_matching: ($) => seq($.rule_constant_prefix, ":", $.string),
