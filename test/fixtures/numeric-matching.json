@@ -1,0 +1,7 @@
+{
+  "detail": {
+    "c-count": [ { "numeric": [ ">", 0, "<=", 5 ] } ],
+    "d-count": [ { "numeric": [ "<", 10 ] } ],
+    "x-limit": [ { "numeric": [ "=", 3.018e2 ] } ]
+  }
+}
