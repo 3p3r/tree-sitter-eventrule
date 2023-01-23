@@ -112,13 +112,13 @@ function emitRuleOr(context: Context): string {
 }
 function emitRulePrefix(context: Context): string {
 	const { name: firstPart, inputPath } = getJsonPathFromQueryCaptureNode(
-    context.node,
-  );
-  const secondPart =
-  context.node.parent?.type === NodeType.rule_anything_but_matching
-  	? "_prefix"
-  	: "";
-  const name = `${firstPart}${secondPart}`;
+		context.node,
+	);
+	const secondPart =
+		context.node.parent?.type === NodeType.rule_anything_but_matching
+			? "_prefix"
+			: "";
+	const name = `${firstPart}${secondPart}`;
 	const ruleTest = unquote(context.node.namedChildren[1].text);
 	// handle input value as string
 	context.rules.push(
@@ -189,7 +189,7 @@ function emitRuleNumeric(context: Context): string {
 	const { name, inputPath } = getJsonPathFromQueryCaptureNode(context.node);
 	const firstSign = unquote(context.node.namedChildren[1].text);
 	const firstNum = unquote(context.node.namedChildren[2].text);
-	const rules = ['', ''];
+	const rules = ["", ""];
 	rules[0] += `${name} {\n\tinput${inputPath} ${firstSign} ${firstNum}\n`;
 	rules[1] += `${name} {\n\tinput${inputPath}[_] ${firstSign} ${firstNum}\n`;
 	const secondSign = unquote(context.node.namedChildren[3]?.text || "");
@@ -236,9 +236,11 @@ function emitRuleValue(context: Context): string {
 	context.rules.push(
 		`${name} {\n\t({ ${ruleTest} } & { input${inputPath} }) == { input${inputPath} }\n}`,
 	);
-	if(context.node?.parent?.parent?.parent?.type !== NodeType.rule_or_matching) {
+	if (
+		context.node?.parent?.parent?.parent?.type !== NodeType.rule_or_matching
+	) {
 		context.rules.push(
-			`${name} {\n\tcount([match | v := input${inputPath}[_]; s := [ ${ruleTest} ][_]; s == v; match := v]) > 0\n}`
+			`${name} {\n\tcount([match | v := input${inputPath}[_]; s := [ ${ruleTest} ][_]; s == v; match := v]) > 0\n}`,
 		);
 	}
 	return name;
@@ -261,7 +263,7 @@ function emitRule(context: Context): string {
 		switch (context.node.type) {
 			case NodeType.rule_or_matching:
 				return emitRuleOr(context);
-      case NestedNodeType.rule_nested_prefix_matching:
+			case NestedNodeType.rule_nested_prefix_matching:
 			case NodeType.rule_prefix_matching:
 				return emitRulePrefix(context);
 			case NodeType.rule_suffix_matching:
