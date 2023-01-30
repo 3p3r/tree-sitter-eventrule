@@ -11,13 +11,13 @@ export default async function setup() {
 	// @ts-expect-error - this is how we pass data to tests
 	globalThis.FIXTURES = await Promise.all(
 		glob(`${fixRoot}/*.json`).map((f) =>
-			compile(f).then((policyDocuments) => {
+			compile(f).then(([policyDocument]) => {
 				const name = basename(f, ".json");
 				const wasm = resolve(fixRoot, `${name}.wasm`);
 				const bundle = resolve(fixRoot, `${name}.tar.gz`);
 				const rego = resolve(fixRoot, `${name}.rego`);
 				rmSync(rego, { force: true });
-				writeFileSync(rego, policyDocuments[0], "utf8");
+				writeFileSync(rego, policyDocument, "utf8");
 				rmSync(wasm, { force: true });
 				rmSync(bundle, { force: true });
 				execSync(`opa build -t wasm -e rule2rego -o "${bundle}" "${rego}"`, {
