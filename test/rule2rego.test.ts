@@ -1,3 +1,5 @@
+import { walkInput } from "../rule2rego";
+import { resolve } from "path";
 // rome-ignore lint/suspicious/noExplicitAny: <explanation>
 type ExplicitAny = any;
 interface Fixture {
@@ -30,6 +32,12 @@ describe("rule2rego tests", () => {
 					expect(result[0].result.allow).toBeFalsy();
 				});
 			});
+		});
+	});
+	describe("walkInput", () => {
+		it("should walk fixtures", async () => {
+			const files = await walkInput(resolve(__dirname, "fixtures"));
+			expect(files.length).toBe(64);
 		});
 	});
 });

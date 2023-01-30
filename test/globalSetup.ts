@@ -11,7 +11,7 @@ export default async function setup() {
 	// @ts-expect-error - this is how we pass data to tests
 	globalThis.FIXTURES = await Promise.all(
 		glob(`${fixRoot}/*.json`).map((f) =>
-			compile(f).then((policyDocument) => {
+			compile(f).then(([policyDocument]) => {
 				const name = basename(f, ".json");
 				const wasm = resolve(fixRoot, `${name}.wasm`);
 				const bundle = resolve(fixRoot, `${name}.tar.gz`);

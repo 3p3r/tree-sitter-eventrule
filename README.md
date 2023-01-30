@@ -4,7 +4,7 @@ Grammar for AWS Event Rules:
 <https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns-content-based-filtering.html>
 
 Event Rules are JSON documents that are used to filter other JSON documents.  
-On AWS EventBridge, they are used to filter AWS CloudWatch Events.  
+On AWS EventBridge, they are used to filter AWS CloudWatch Events.
 
 Comparing to other policy formats, Event Rules are limited in terms of features,
 but are easy to understand for non-technical folks and are an extension to JSON.
@@ -22,7 +22,7 @@ JSON input and generate the REGO policy.
 $ npm install -g tree-sitter-eventrule
 $ rule2rego --help
 Compiles AWS Event Rule pattern JSON to OPA REGO policy.
-Usage: rule2rego <rule>.json
+Usage: rule2rego [<rule>.json] [folder]
 ```
 
 For example, for the following input Rule Event:
@@ -68,32 +68,46 @@ allow {
 }
 ```
 
-## adding e2e compiler tests
+> If you compile a directory you will get each policy output separated by a single blank line. The final policy is a combination policy that checks if input matches _any_ of the generated policies.
 
-If you want to run the tests locally, you need to have:
+Compile the rules with OPA (example compiles to WASM)
 
-- Docker for Tree Sitter to build you a `.wasm` artifact
-- OPA for Jest to build you `.wasm` policies for evaluation
-
-Jest picks up your tests automatically if you follow these instructions:
-
-- Add your rule JSON `<rule name>.json` under `test/fixtures`
-- With the same name, create a directory `<rule name>`
-- Create two additional directories `allows` and `denies` inside it
-- Any JSON you put in either of those two folders, is picked as an event JSON
-
-`npm test` output is sorted alphabetically.
-
-Sample directory structure:
-
-```raw
-- test/fixtures
-  - prefix-matching.json
-  - prefix-matching
-    - allows
-      - event1.json
-      - event2.json
-    - denies
-      - event1.json
-      - event2.json
+```sh
+npx rule2rego rule.json > policy.rego
+opa build -t wasm -e rule2rego -o bundle.tar.gz policy.rego
+tar -xvf bundle.tar.gz /policy.wasm
 ```
+
+Now you can use the WASM compiled OPA in any application that supports WASM.
+
+> You can compile the policies to any format opa supports and use it however you want. This applications main concern is to convert cloudwatch event rules to rego.
+
+A quick way to write each rule.json rule in a folder to separate policies is:
+
+```sh
+mkdir -p out
+npx rule2rego folder | awk -v RS= '{print > ("out/" NR ".rego")}'
+# write each converted rule to out/#.rego
+```
+
+## `rule2rego` in javascript application
+
+In addition to being a CLI utility you can use rule2rego directly in your JS applications.
+
+```javascript
+const fs = require("fs");
+const path = require("path");
+const {compile} = require("tree-sitter-eventrule/dist/main");
+
+(async () => {
+  const rules = await compile("rule.json");
+  for (const rule of rules) {
+    console.log(rule);
+  }
+})()
+
+```
+
+## Contributing
+
+[See the contributing guide](CONTRIBUTING.md)

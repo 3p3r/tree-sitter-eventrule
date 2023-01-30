@@ -2,8 +2,8 @@
 
 import Parser from "web-tree-sitter";
 import { ok } from "assert";
-import { readFile } from "fs/promises";
-import { resolve } from "path";
+import { readFile, stat, readdir } from "fs/promises";
+import { resolve, relative } from "path";
 
 enum NodeType {
 	rule_or_matching = "rule_or_matching",
@@ -302,35 +302,88 @@ interface Context {
 	readonly node: Parser.SyntaxNode;
 }
 
+export async function walkInput(input: string): Promise<string[]> {
+	const abs = resolve(input);
+	const dirent = await stat(abs);
+	if (!dirent.isDirectory()) {
+		return [abs];
+	}
+	let inputs: string[] = [];
+	const dirents = await readdir(abs, { withFileTypes: true });
+	for (const stat of dirents) {
+		const absPath = resolve(input, stat.name);
+		if (stat.isDirectory()) {
+			inputs = inputs.concat(await walkInput(resolve(absPath)));
+			continue;
+		}
+		if (!stat.name.endsWith(".json")) {
+			continue;
+		}
+		inputs.push(absPath);
+	}
+	return inputs;
+}
+
 export async function compile(input = process.argv[2]) {
 	const ruleCache = new Map<number, string>();
 	const ruleRoots = new Set<string>();
 	const parser = await createParser();
-	const source = await readFile(resolve(input), "utf8");
-	const tree = parser.parse(source);
-	const token = "cap";
-	const ruleQueries = getAllRuleNodeTypes()
-		.map((q) => `(${q}) @${token}`)
-		.map((q) => parser.getLanguage().query(q))
-		.map((q) => q.captures(tree.rootNode))
-		.flatMap((q) => q);
-	const rules: string[] = [];
-	for (const ruleQuery of ruleQueries) {
-		ok(ruleQuery.name === token);
-		const node = ruleQuery.node;
-		emitRule({ node, rules, ruleCache, ruleRoots });
+	const sourceRoot = resolve(input);
+	const sources = await walkInput(input);
+	const bodies: string[] = [];
+	const regoRulenames: string[] = [];
+	const kebabRegExp = new RegExp(/[^a-zA-Z0-9]|-{1,}/, "g");
+	for (const sourcePath of sources) {
+		const source = await readFile(sourcePath, "utf8");
+		const tree = parser.parse(source);
+		const token = "cap";
+		const ruleQueries = getAllRuleNodeTypes()
+			.map((q) => `(${q}) @${token}`)
+			.map((q) => parser.getLanguage().query(q))
+			.map((q) => q.captures(tree.rootNode))
+			.flatMap((q) => q);
+		const rules: string[] = [];
+		for (const ruleQuery of ruleQueries) {
+			ok(ruleQuery.name === token);
+			const node = ruleQuery.node;
+			emitRule({ node, rules, ruleCache, ruleRoots });
+		}
+		let header = "";
+		if (sources.length === 1) {
+			header = "package rule2rego\ndefault allow := false";
+		} else {
+			const pkgPath = relative(sourceRoot, sourcePath).slice(0, -5);
+			const ruleName = pkgPath.replace(kebabRegExp, "");
+			regoRulenames.push(ruleName);
+			header = `package rule2rego.${ruleName}\ndefault allow := false`;
+		}
+		const init = [...new Set(Array.from(ruleCache.values()))]
+			.map((i) => `default ${i} := false`)
+			.join("\n");
+		const policy = `\n${rules.join("\n")}`;
+		const footer = `allow {\n\t${Array.from(ruleRoots).join("\n\t")}\n}`;
+		const body = `${header}\n${init}${policy}\n${footer}`.replace(
+			/\n\n/g,
+			"\n",
+		);
+		if (input === process.argv[2]) {
+			console.log(body);
+			console.log("");
+		}
+		bodies.push(body);
 	}
-	const header = "package rule2rego\ndefault allow := false";
-	const init = [...new Set(Array.from(ruleCache.values()))]
-		.map((i) => `default ${i} := false`)
-		.join("\n");
-	const policy = `\n${rules.join("\n")}`;
-	const footer = `allow {\n\t${Array.from(ruleRoots).join("\n\t")}\n}`;
-	const body = `${header}\n${init}${policy}\n${footer}`.replace(/\n\n/g, "\n");
-	if (input === process.argv[2]) {
-		console.log(body);
+	if (sources.length > 1) {
+		// add the main
+		const body = `package rule2rego\ndefault allow := false\nallow {\n  data.rule2rego.${regoRulenames.join(
+			".allow\n}\nallow {\n  data.rule2rego.",
+		)}.allow\n}`;
+		bodies.splice(0, 0, body);
+		if (input === process.argv[2]) {
+			console.log(body);
+			console.log("");
+		}
 	}
-	return body;
+	return bodies;
 }
 
 if (process.argv[1].endsWith("rule2rego.ts")) {
