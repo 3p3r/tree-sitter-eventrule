@@ -1,5 +1,9 @@
-import { walkInput } from "../rule2rego";
-import { resolve } from "path";
+import { compile } from "../rule2rego";
+import { sync as glob } from "glob";
+import * as path from "path";
+import * as fs from "fs";
+import * as os from "os";
+
 // rome-ignore lint/suspicious/noExplicitAny: <explanation>
 type ExplicitAny = any;
 interface Fixture {
@@ -36,8 +40,31 @@ describe("rule2rego tests", () => {
 	});
 	describe("walkInput", () => {
 		it("should walk fixtures", async () => {
-			const files = await walkInput(resolve(__dirname, "fixtures"));
-			expect(files.length).toBe(64);
+			const files = glob(path.join(__dirname, "fixtures", "*.json"));
+			await fs.promises.mkdir(path.join(os.tmpdir(), "tree-sitter-eventrule"), {
+				recursive: true,
+			});
+			const tmpDir = await fs.promises.mkdtemp(
+				path.join(os.tmpdir(), "tree-sitter-eventrule/"),
+			);
+			for (const file of files) {
+				fs.writeFileSync(
+					path.join(tmpDir, path.basename(file)),
+					fs.readFileSync(file),
+				);
+			}
+			const policies = await compile(tmpDir);
+			expect(policies.length).toBe(files.length + 1);
+			expect(policies[12]).toEqual(`package rule2rego.wildcardmatching
+default allow := false
+default allow_source := false
+allow_source {
+	glob.match("Simple*Service", [], input["source"])
+}
+allow {
+	allow_source
+}`);
+			// const files = await walkInput(resolve(__dirname, "fixtures"));
 		});
 	});
 });

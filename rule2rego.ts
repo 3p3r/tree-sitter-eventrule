@@ -325,8 +325,6 @@ export async function walkInput(input: string): Promise<string[]> {
 }
 
 export async function compile(input = process.argv[2]) {
-	const ruleCache = new Map<number, string>();
-	const ruleRoots = new Set<string>();
 	const parser = await createParser();
 	const sourceRoot = resolve(input);
 	const sources = await walkInput(input);
@@ -334,6 +332,8 @@ export async function compile(input = process.argv[2]) {
 	const regoRulenames: string[] = [];
 	const kebabRegExp = new RegExp(/[^a-zA-Z0-9]|-{1,}/, "g");
 	for (const sourcePath of sources) {
+		const ruleCache = new Map<number, string>();
+		const ruleRoots = new Set<string>();
 		const source = await readFile(sourcePath, "utf8");
 		const tree = parser.parse(source);
 		const token = "cap";
