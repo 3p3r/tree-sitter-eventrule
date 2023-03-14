@@ -71,7 +71,9 @@ function getJsonPathFromQueryCaptureNode(node: Parser.SyntaxNode): RuleData {
 	const ruleName = orderedNames
 		.map((n) => n.replace(/[^\w\d]+/g, ""))
 		.join("_");
-	const inputPath = orderedPaths.map((n) => `["${n}"]`).join("");
+	const inputPath = orderedPaths.reduce((cur: string, next: string) => {
+		return `f(${cur}["${next}"])[_]`;
+	}, "input");
 	return { name: `allow_${ruleName || "or"}`, inputPath };
 }
 
@@ -120,37 +122,20 @@ function emitRulePrefix(context: Context): string {
 			: "";
 	const name = `${firstPart}${secondPart}`;
 	const ruleTest = unquote(context.node.namedChildren[1].text);
-	// handle input value as string
-	context.rules.push(
-		`${name} {\n\tstartswith(input${inputPath}, "${ruleTest}")\n}`,
-	);
-	// handle input value as array
-	context.rules.push(
-		`${name} {\n\tstartswith(input${inputPath}[_], "${ruleTest}")\n}`,
-	);
+	context.rules.push(`${name} {\n\tstartswith(${inputPath}, "${ruleTest}")\n}`);
 	return name;
 }
 function emitRuleSuffix(context: Context): string {
 	const { name, inputPath } = getJsonPathFromQueryCaptureNode(context.node);
 	const ruleTest = unquote(context.node.namedChildren[1].text);
-	// handle input value as string
-	context.rules.push(
-		`${name} {\n\tendswith(input${inputPath}, "${ruleTest}")\n}`,
-	);
-	// handle input value as array
-	context.rules.push(
-		`${name} {\n\tendswith(input${inputPath}[_], "${ruleTest}")\n}`,
-	);
+	context.rules.push(`${name} {\n\tendswith(${inputPath}, "${ruleTest}")\n}`);
 	return name;
 }
 function emitRuleEqualsIgnoreCase(context: Context): string {
 	const { name, inputPath } = getJsonPathFromQueryCaptureNode(context.node);
 	const ruleTest = unquote(context.node.namedChildren[1].text);
 	context.rules.push(
-		`${name} {\n\tlower(input${inputPath}) == "${ruleTest.toLowerCase()}"\n}`,
-	);
-	context.rules.push(
-		`${name} {\n\tlower(input${inputPath}[_]) == "${ruleTest.toLowerCase()}"\n}`,
+		`${name} {\n\tlower(${inputPath}) == "${ruleTest.toLowerCase()}"\n}`,
 	);
 	return name;
 }
@@ -158,7 +143,7 @@ function emitRuleWildcard(context: Context): string {
 	const { name, inputPath } = getJsonPathFromQueryCaptureNode(context.node);
 	const ruleTest = unquote(context.node.namedChildren[1].text);
 	context.rules.push(
-		`${name} {\n\tglob.match("${ruleTest}", [], input${inputPath})\n}`,
+		`${name} {\n\tglob.match("${ruleTest}", [], ${inputPath})\n}`,
 	);
 	return name;
 }
@@ -171,16 +156,15 @@ function emitRuleAnythingBut(context: Context): string {
 	}
 	if (ruleTest.type === PrimitiveNodeType.array) {
 		const val = ruleTest.text.slice(1, -1);
-		out += `${name} {\n\t{ ${val} } & { input${inputPath} } != { input${inputPath} }`;
-		out += `\n\tcount([match | v := input${inputPath}[_]; s := [ ${val} ][_]; s == v; match := v]) == 0\n}`;
+		out += `${name} {\n\tcount([match | v := ${inputPath}; s := [ ${val} ][_]; s == v; match := v]) == 0\n}`;
 	}
 	if (ruleTest.type === PrimitiveNodeType.string) {
 		const val = unquote(ruleTest.text);
-		out += `${name} {\n\tinput${inputPath} != "${val}"\n}`;
+		out += `${name} {\n\t${inputPath} != "${val}"\n}`;
 	}
 	if (ruleTest.type === PrimitiveNodeType.number) {
 		const val = ruleTest.text;
-		out += `${name} {\n\tinput${inputPath} != ${val}\n}`;
+		out += `${name} {\n\t${inputPath} != ${val}\n}`;
 	}
 	context.rules.push(out);
 	return name;
@@ -190,16 +174,13 @@ function emitRuleNumeric(context: Context): string {
 	const firstSign = unquote(context.node.namedChildren[1].text);
 	const firstNum = unquote(context.node.namedChildren[2].text);
 	const rules = ["", ""];
-	rules[0] += `${name} {\n\tinput${inputPath} ${firstSign} ${firstNum}\n`;
-	rules[1] += `${name} {\n\tinput${inputPath}[_] ${firstSign} ${firstNum}\n`;
+	rules[0] += `${name} {\n\t${inputPath} ${firstSign} ${firstNum}\n`;
 	const secondSign = unquote(context.node.namedChildren[3]?.text || "");
 	const secondNum = unquote(context.node.namedChildren[4]?.text || "");
 	if (secondSign && secondNum) {
-		rules[0] += `\tinput${inputPath} ${secondSign} ${secondNum}\n`;
-		rules[1] += `\tinput${inputPath}[_] ${secondSign} ${secondNum}\n`;
+		rules[0] += `\t${inputPath} ${secondSign} ${secondNum}\n`;
 	}
 	rules[0] += "}";
-	rules[1] += "}";
 	context.rules.push(...rules);
 	return name;
 }
@@ -207,26 +188,21 @@ function emitRuleIpAddress(context: Context): string {
 	const { name, inputPath } = getJsonPathFromQueryCaptureNode(context.node);
 	const ruleTest = unquote(context.node.namedChildren[1].text);
 	context.rules.push(
-		`${name} {\n\tnet.cidr_contains("${ruleTest}", input${inputPath})\n}`,
-	);
-	context.rules.push(
-		`${name} {\n\tnet.cidr_contains("${ruleTest}", input${inputPath}[_])\n}`,
+		`${name} {\n\tnet.cidr_contains("${ruleTest}", ${inputPath})\n}`,
 	);
 	return name;
 }
 function emitRuleExactly(context: Context): string {
 	const { name, inputPath } = getJsonPathFromQueryCaptureNode(context.node);
 	const ruleTest = unquote(context.node.namedChildren[1].text);
-	context.rules.push(`${name} {\n\tinput${inputPath} == "${ruleTest}"\n}`);
+	context.rules.push(`${name} {\n\t${inputPath} == "${ruleTest}"\n}`);
 	return name;
 }
 function emitRuleExists(context: Context): string {
 	const { name, inputPath } = getJsonPathFromQueryCaptureNode(context.node);
 	const ruleTest = context.node.namedChildren[1].text === "true";
 	context.rules.push(
-		`${name} {\n\t${
-			ruleTest ? `input${inputPath}` : `not input${inputPath}`
-		}\n}`,
+		`${name} {\n\t${ruleTest ? `${inputPath}` : `not ${inputPath}`}\n}`,
 	);
 	return name;
 }
@@ -234,15 +210,8 @@ function emitRuleValue(context: Context): string {
 	const { name, inputPath } = getJsonPathFromQueryCaptureNode(context.node);
 	const ruleTest = context.node.namedChildren[1].text.slice(1, -1);
 	context.rules.push(
-		`${name} {\n\t({ ${ruleTest} } & { input${inputPath} }) == { input${inputPath} }\n}`,
+		`${name} {\n\tcount([match | v := ${inputPath}; s := [ ${ruleTest} ][_]; s == v; match := v]) > 0\n}`,
 	);
-	if (
-		context.node?.parent?.parent?.parent?.type !== NodeType.rule_or_matching
-	) {
-		context.rules.push(
-			`${name} {\n\tcount([match | v := input${inputPath}[_]; s := [ ${ruleTest} ][_]; s == v; match := v]) > 0\n}`,
-		);
-	}
 	return name;
 }
 
@@ -349,20 +318,25 @@ export async function compile(input = process.argv[2]) {
 			emitRule({ node, rules, ruleCache, ruleRoots });
 		}
 		let header = "";
+		const futures = "import future.keywords.if";
 		if (sources.length === 1) {
-			header = "package rule2rego\ndefault allow := false";
+			header = `package rule2rego\n${futures}\ndefault allow := false`;
 		} else {
 			const pkgPath = relative(sourceRoot, sourcePath).slice(0, -5);
 			const ruleName = pkgPath.replace(kebabRegExp, "");
 			regoRulenames.push(ruleName);
-			header = `package rule2rego.${ruleName}\ndefault allow := false`;
+			header = `package rule2rego.${ruleName}\n${futures}\ndefault allow := false`;
 		}
+		const helpers = `
+f(x) := x if { is_array(x) }
+f(x) := [x] if { not is_array(x) }
+`;
 		const init = [...new Set(Array.from(ruleCache.values()))]
 			.map((i) => `default ${i} := false`)
 			.join("\n");
 		const policy = `\n${rules.join("\n")}`;
 		const footer = `allow {\n\t${Array.from(ruleRoots).join("\n\t")}\n}`;
-		const body = `${header}\n${init}${policy}\n${footer}`.replace(
+		const body = `${header}\n${helpers}${init}${policy}\n${footer}`.replace(
 			/\n\n/g,
 			"\n",
 		);

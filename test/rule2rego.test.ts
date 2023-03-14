@@ -55,11 +55,14 @@ describe("rule2rego tests", () => {
 			}
 			const policies = await compile(tmpDir);
 			expect(policies.length).toBe(files.length + 1);
-			expect(policies[12]).toEqual(`package rule2rego.wildcardmatching
+			expect(policies[13]).toEqual(`package rule2rego.wildcardmatching
+import future.keywords.if
 default allow := false
+f(x) := x if { is_array(x) }
+f(x) := [x] if { not is_array(x) }
 default allow_source := false
 allow_source {
-	glob.match("Simple*Service", [], input["source"])
+	glob.match("Simple*Service", [], f(input["source"])[_])
 }
 allow {
 	allow_source
