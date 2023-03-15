@@ -1,5 +1,6 @@
 {
   "detail": {
-    "state": [ { "exists": true  } ]
+    "state": [ { "exists": true  } ],
+    "error": [ { "exists": false  } ]
   }
 }
