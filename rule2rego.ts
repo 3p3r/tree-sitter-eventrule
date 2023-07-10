@@ -110,13 +110,27 @@ function emitRuleOr(context: Context): Rule {
 		(c) => c.type === PrimitiveNodeType.object,
 	);
 	for (const childObject of childObjects) {
-		const childRules = childObject.namedChildren
+		const topLevelChildRules = childObject.namedChildren
 			.filter(
 				(c) =>
 					c.type === PrimitiveNodeType.pair &&
 					getAllRuleNodeTypes().includes(c.namedChildren[0].type),
 			)
 			.map((c) => c.namedChildren[0]);
+		const nestedChildRules = childObject.namedChildren
+			.filter(
+				(c) =>
+					c.type === PrimitiveNodeType.pair &&
+					c.namedChildren[0].type === "string" &&
+					c.namedChildren?.[1]?.children?.[1]?.children?.[1]?.type ===
+						PrimitiveNodeType.pair &&
+					getAllRuleNodeTypes().includes(
+						c.namedChildren?.[1]?.children?.[1]?.children?.[1]
+							?.namedChildren?.[0]?.type,
+					),
+			)
+			.map((c) => c.namedChildren[1].children[1].children[1].namedChildren[0]);
+		const childRules = [...topLevelChildRules, ...nestedChildRules];
 		if (childRules.length > 0) {
 			out += `${name} {\n`;
 			for (const childRule of childRules) {

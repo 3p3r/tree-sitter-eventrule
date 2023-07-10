@@ -1,0 +1,5 @@
+{
+  "detail-type": "EC2 Instance State-change Notification",
+  "source": "aws.cloudwatch",
+  "metric": {"name": "ReadLatency"}
+}

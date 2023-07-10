@@ -55,7 +55,10 @@ describe("rule2rego tests", () => {
 			}
 			const policies = await compile(tmpDir);
 			expect(policies.length).toBe(files.length + 1);
-			expect(policies[13]).toEqual(`package rule2rego.wildcardmatching
+			// checks what we assume to be the last policy in list of policies.
+			// if we add a policy that is alphabetically after wildcard-matching
+			// then this test case will need to be updated.
+			expect(policies.pop()).toEqual(`package rule2rego.wildcardmatching
 import future.keywords.if
 default allow := false
 f(x) := x if { is_array(x) }
