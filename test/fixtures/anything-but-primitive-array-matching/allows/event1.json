@@ -1,11 +1,11 @@
 {
-  "detail": {
-    "userIdentity": {
-      "sessionContext": {
-        "sessionIssuer": {
-          "arn": "arn:aws:iam:000000000000:role/good-role"
-        }
-      }
-    }
-  }
+	"detail": {
+		"userIdentity": {
+			"sessionContext": {
+				"sessionIssuer": {
+					"arn": "arn:aws:iam:000000000000:role/good-role"
+				}
+			}
+		}
+	}
 }

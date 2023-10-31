@@ -1,14 +1,18 @@
 {
-  "detail": {
-    "nested": {
-      "simple": ["STRING_VALUE"],
-      "deep": {
-        "deeper": [{
-          "deepest": [{
-            "key": ["value"]
-          }]
-        }]
-      }
-    }
-  }
+	"detail": {
+		"nested": {
+			"simple": ["STRING_VALUE"],
+			"deep": {
+				"deeper": [
+					{
+						"deepest": [
+							{
+								"key": ["value"]
+							}
+						]
+					}
+				]
+			}
+		}
+	}
 }

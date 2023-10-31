@@ -1,6 +1,6 @@
 {
-  "resources": [
-    "arn:aws:autoscaling:us-east-1:123456789012:autoScalingGroup:eb56d16b-bbf0-401d-b893-d5978ed4a025:autoScalingGroupName/ASGTerminate",
-    "arn:aws:ec2:us-east-1:123456789012:instance/i-b188560f"
- ]
+	"resources": [
+		"arn:aws:autoscaling:us-east-1:123456789012:autoScalingGroup:eb56d16b-bbf0-401d-b893-d5978ed4a025:autoScalingGroupName/ASGTerminate",
+		"arn:aws:ec2:us-east-1:123456789012:instance/i-b188560f"
+	]
 }

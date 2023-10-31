@@ -1,25 +1,25 @@
 {
-  "source": ["aws.cloudwatch"],
-  "$or": [
-    { 
-      "metric": [
-        {
-          "$or": [
-            { 
-              "name": [{"prefix": "Read"}] 
-            }, 
-            { 
-              "namespace": [{"prefix": "AWS"}] 
-            }
-          ]
-        }
-      ] 
-    }, 
-    {
-      "simple": ["value"]
-    },
-    { 
-      "namespace": [{"prefix": "AWS"}] 
-    }
-  ]
+	"source": ["aws.cloudwatch"],
+	"$or": [
+		{
+			"metric": [
+				{
+					"$or": [
+						{
+							"name": [{ "prefix": "Read" }]
+						},
+						{
+							"namespace": [{ "prefix": "AWS" }]
+						}
+					]
+				}
+			]
+		},
+		{
+			"simple": ["value"]
+		},
+		{
+			"namespace": [{ "prefix": "AWS" }]
+		}
+	]
 }
