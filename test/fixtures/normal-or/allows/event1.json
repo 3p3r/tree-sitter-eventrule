@@ -1,5 +1,5 @@
 {
-  "detail-type": "EC2 Instance State-change Notification",
-  "source": "aws.cloudwatch",
-  "namespace": "AWS/ES"
+	"detail-type": "EC2 Instance State-change Notification",
+	"source": "aws.cloudwatch",
+	"namespace": "AWS/ES"
 }

@@ -1,10 +1,10 @@
 {
-  "version": "0",
-  "id": "ddddd4-aaaa-7777-4444-345dd43cc333",
-  "detail-type": "EC2 Instance State-change Notification",
-  "source": "aws.cloudwatch",
-  "account": "012345679012",
-  "time": "2017-10-02T16:24:49Z",
-  "metricName": "ReadLatency",
-  "namespace": "AWS/EC2"
+	"version": "0",
+	"id": "ddddd4-aaaa-7777-4444-345dd43cc333",
+	"detail-type": "EC2 Instance State-change Notification",
+	"source": "aws.cloudwatch",
+	"account": "012345679012",
+	"time": "2017-10-02T16:24:49Z",
+	"metricName": "ReadLatency",
+	"namespace": "AWS/EC2"
 }

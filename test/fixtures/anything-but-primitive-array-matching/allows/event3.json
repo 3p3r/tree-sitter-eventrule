@@ -1,11 +1,14 @@
 {
-  "detail": {
-    "userIdentity": {
-      "sessionContext": {
-        "sessionIssuer": {
-          "arn": ["arn:aws:iam:000000000000:role/good-role", "arn:aws:iam:000000000000:role/great-role"]
-        }
-      }
-    }
-  }
+	"detail": {
+		"userIdentity": {
+			"sessionContext": {
+				"sessionIssuer": {
+					"arn": [
+						"arn:aws:iam:000000000000:role/good-role",
+						"arn:aws:iam:000000000000:role/great-role"
+					]
+				}
+			}
+		}
+	}
 }

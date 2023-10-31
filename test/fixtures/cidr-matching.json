@@ -1,5 +1,5 @@
 {
-  "detail": {
-    "sourceIPAddress": [ { "cidr": "10.0.0.0/24" }, { "cidr": "10.0.3.0/24" } ]
-  }
+	"detail": {
+		"sourceIPAddress": [{ "cidr": "10.0.0.0/24" }, { "cidr": "10.0.3.0/24" }]
+	}
 }
