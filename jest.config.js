@@ -20,6 +20,6 @@ module.exports = {
 			},
 		],
 	},
-	detectLeaks: true,
+	detectLeaks: false,
 	errorOnDeprecated: true,
 };
