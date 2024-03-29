@@ -21,6 +21,7 @@ enum NodeType {
 
 enum NestedNodeType {
 	rule_nested_prefix_matching = "rule_nested_prefix_matching",
+	rule_nested_equals_ignore_case_matching = "rule_nested_equals_ignore_case_matching",
 }
 
 enum PrimitiveNodeType {
@@ -151,8 +152,20 @@ function emitRulePrefix(context: Context): Rule {
 			? "_prefix"
 			: "";
 	const name = `${firstPart}${secondPart}`;
-	const ruleTest = unquote(context.node.namedChildren[1].text);
-	context.rules.push(`${name} {\n\tstartswith(${inputPath}, "${ruleTest}")\n}`);
+	const ruleTest = context.node.namedChildren[1];
+
+	if (
+		ruleTest.type === NestedNodeType.rule_nested_equals_ignore_case_matching
+	) {
+		return {
+			name: emitRule({ ...context, node: ruleTest }).name,
+		};
+	}
+
+	const ruleTestText = unquote(ruleTest.text);
+	context.rules.push(
+		`${name} {\n\tstartswith(${inputPath}, "${ruleTestText}")\n}`,
+	);
 	return { name };
 }
 function emitRuleSuffix(context: Context): Rule {
@@ -162,8 +175,21 @@ function emitRuleSuffix(context: Context): Rule {
 	return { name };
 }
 function emitRuleEqualsIgnoreCase(context: Context): Rule {
-	const { name, inputPath } = getJsonPathFromQueryCaptureNode(context.node);
+	const { name: firstPart, inputPath } = getJsonPathFromQueryCaptureNode(
+		context.node,
+	);
+	const isPrefix = context.node.parent?.type === NodeType.rule_prefix_matching;
+	const secondPart = isPrefix ? "_prefix_ignore_case" : "";
+	const name = `${firstPart}${secondPart}`;
 	const ruleTest = unquote(context.node.namedChildren[1].text);
+
+	if (isPrefix) {
+		context.rules.push(
+			`${name} {\n\tstartswith(lower(${inputPath}), "${ruleTest.toLowerCase()}")\n}`,
+		);
+		return { name };
+	}
+
 	context.rules.push(
 		`${name} {\n\tlower(${inputPath}) == "${ruleTest.toLowerCase()}"\n}`,
 	);
@@ -273,6 +299,7 @@ function emitRule(context: Context): Rule {
 				return emitRulePrefix(context);
 			case NodeType.rule_suffix_matching:
 				return emitRuleSuffix(context);
+			case NestedNodeType.rule_nested_equals_ignore_case_matching:
 			case NodeType.rule_equals_ignore_case_matching:
 				return emitRuleEqualsIgnoreCase(context);
 			case NodeType.rule_wildcard_matching:
