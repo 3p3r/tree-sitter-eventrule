@@ -57,7 +57,20 @@ module.exports = grammar(require("tree-sitter-json/grammar"), {
 					),
 				),
 			),
-		rule_suffix_matching: ($) => seq($.rule_constant_suffix, ":", $.string),
+		rule_suffix_matching: ($) =>
+			seq(
+				$.rule_constant_suffix,
+				":",
+				choice(
+					$.string,
+					curlyBracketScoped(
+						alias(
+							$.rule_equals_ignore_case_matching,
+							$.rule_nested_equals_ignore_case_matching,
+						),
+					),
+				),
+			),
 		rule_equals_ignore_case_matching: ($) =>
 			seq($.rule_constant_equals_ignore_case, ":", $.string),
 		rule_wildcard_matching: ($) => seq($.rule_constant_wildcard, ":", $.string),

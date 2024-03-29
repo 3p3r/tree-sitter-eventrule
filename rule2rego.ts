@@ -169,9 +169,28 @@ function emitRulePrefix(context: Context): Rule {
 	return { name };
 }
 function emitRuleSuffix(context: Context): Rule {
-	const { name, inputPath } = getJsonPathFromQueryCaptureNode(context.node);
-	const ruleTest = unquote(context.node.namedChildren[1].text);
-	context.rules.push(`${name} {\n\tendswith(${inputPath}, "${ruleTest}")\n}`);
+	const { name: firstPart, inputPath } = getJsonPathFromQueryCaptureNode(
+		context.node,
+	);
+	const secondPart =
+		context.node.parent?.type === NodeType.rule_anything_but_matching
+			? "_suffix"
+			: "";
+	const name = `${firstPart}${secondPart}`;
+	const ruleTest = context.node.namedChildren[1];
+
+	if (
+		ruleTest.type === NestedNodeType.rule_nested_equals_ignore_case_matching
+	) {
+		return {
+			name: emitRule({ ...context, node: ruleTest }).name,
+		};
+	}
+
+	const ruleTestText = unquote(ruleTest.text);
+	context.rules.push(
+		`${name} {\n\tendswith(${inputPath}, "${ruleTestText}")\n}`,
+	);
 	return { name };
 }
 function emitRuleEqualsIgnoreCase(context: Context): Rule {
@@ -179,13 +198,24 @@ function emitRuleEqualsIgnoreCase(context: Context): Rule {
 		context.node,
 	);
 	const isPrefix = context.node.parent?.type === NodeType.rule_prefix_matching;
-	const secondPart = isPrefix ? "_prefix_ignore_case" : "";
+	const isSuffix = context.node.parent?.type === NodeType.rule_suffix_matching;
+	const secondPart = isPrefix
+		? "_prefix_ignore_case"
+		: isSuffix
+		? "_suffix_ignore_case"
+		: "";
 	const name = `${firstPart}${secondPart}`;
 	const ruleTest = unquote(context.node.namedChildren[1].text);
 
 	if (isPrefix) {
 		context.rules.push(
 			`${name} {\n\tstartswith(lower(${inputPath}), "${ruleTest.toLowerCase()}")\n}`,
+		);
+		return { name };
+	}
+	if (isSuffix) {
+		context.rules.push(
+			`${name} {\n\endswith(lower(${inputPath}), "${ruleTest.toLowerCase()}")\n}`,
 		);
 		return { name };
 	}
