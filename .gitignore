@@ -112,3 +112,5 @@ pattern.json
 build
 *.rego
 *.tar.gz
+target
+Cargo.lock
