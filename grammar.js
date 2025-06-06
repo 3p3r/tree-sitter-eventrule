@@ -85,6 +85,12 @@ module.exports = grammar(require("tree-sitter-json/grammar"), {
 					curlyBracketScoped(
 						alias($.rule_prefix_matching, $.rule_nested_prefix_matching),
 					),
+					curlyBracketScoped(
+						alias($.rule_suffix_matching, $.rule_nested_suffix_matching),
+					),
+					curlyBracketScoped(
+						alias($.rule_constant_wildcard, $.rule_nested_constant_wildcard),
+					),
 				),
 			),
 		rule_numeric_comparison_sign: ($) => choice('"<"', '">"', '"<="', '">="'),

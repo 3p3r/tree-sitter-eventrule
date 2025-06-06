@@ -1,0 +1,9 @@
+{
+	"FilePath": [
+		{
+			"anything-but": {
+				"wildcard": ["*/lib/*", "*/bin/*"]
+			}
+		}
+	]
+}
