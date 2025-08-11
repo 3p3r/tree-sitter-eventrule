@@ -57,6 +57,21 @@ module.exports = grammar(require("tree-sitter-json/grammar"), {
 					),
 				),
 			),
+		_rule_prefix_matching_with_arrays: ($) =>
+			seq(
+				$.rule_constant_prefix,
+				":",
+				choice(
+					$.string,
+					squareBracketScoped(commaSep1($.string)),
+					curlyBracketScoped(
+						alias(
+							$.rule_equals_ignore_case_matching,
+							$.rule_nested_equals_ignore_case_matching,
+						),
+					),
+				),
+			),
 		rule_suffix_matching: ($) =>
 			seq(
 				$.rule_constant_suffix,
@@ -71,9 +86,30 @@ module.exports = grammar(require("tree-sitter-json/grammar"), {
 					),
 				),
 			),
+		_rule_suffix_matching_with_arrays: ($) =>
+			seq(
+				$.rule_constant_suffix,
+				":",
+				choice(
+					$.string,
+					squareBracketScoped(commaSep1($.string)),
+					curlyBracketScoped(
+						alias(
+							$.rule_equals_ignore_case_matching,
+							$.rule_nested_equals_ignore_case_matching,
+						),
+					),
+				),
+			),
 		rule_equals_ignore_case_matching: ($) =>
 			seq($.rule_constant_equals_ignore_case, ":", $.string),
 		rule_wildcard_matching: ($) => seq($.rule_constant_wildcard, ":", $.string),
+		_rule_wildcard_matching_with_arrays: ($) =>
+			seq(
+				$.rule_constant_wildcard,
+				":",
+				choice($.string, squareBracketScoped(commaSep1($.string))),
+			),
 		rule_anything_but_matching: ($) =>
 			seq(
 				$.rule_constant_anything_but,
@@ -83,13 +119,22 @@ module.exports = grammar(require("tree-sitter-json/grammar"), {
 					$.string,
 					alias($._rule_value_array, $.array),
 					curlyBracketScoped(
-						alias($.rule_prefix_matching, $.rule_nested_prefix_matching),
+						alias(
+							$._rule_prefix_matching_with_arrays,
+							$.rule_nested_prefix_matching,
+						),
 					),
 					curlyBracketScoped(
-						alias($.rule_suffix_matching, $.rule_nested_suffix_matching),
+						alias(
+							$._rule_suffix_matching_with_arrays,
+							$.rule_nested_suffix_matching,
+						),
 					),
 					curlyBracketScoped(
-						alias($.rule_constant_wildcard, $.rule_nested_constant_wildcard),
+						alias(
+							$._rule_wildcard_matching_with_arrays,
+							$.rule_nested_wildcard_matching,
+						),
 					),
 				),
 			),
