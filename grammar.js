@@ -133,7 +133,7 @@ module.exports = grammar(require("tree-sitter-json/grammar"), {
 					curlyBracketScoped(
 						alias(
 							$._rule_wildcard_matching_with_arrays,
-							$.rule_nested_constant_wildcard,
+							$.rule_nested_wildcard_matching,
 						),
 					),
 				),
